@@ -1,6 +1,6 @@
 -- =====================================================
 -- HONKUKI DEEP VALIDATOR SCANNER (MOBILE-HORIZONTAL ULTRA-LIGHT)
--- [เวอร์ชันปรับปรุง: แก้ปัญหากระตุกสะสม + เพิ่มระบบส่องเพลงบนตัวเรา Real-time]
+-- [เวอร์ชันปรับปรุง: เอาปุ่มส่องเพลงตัวเองออก + ลื่นไหล]
 -- =====================================================
 
 local Players = game:GetService("Players")
@@ -358,16 +358,6 @@ ViewInstantBtn.TextSize = 10
 ViewInstantBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 Instance.new("UICorner", ViewInstantBtn).CornerRadius = UDim.new(0, 4)
 
--- 🌟 ปุ่มใหม่: ส่องเพลงตัวเองสดๆ Realtime
-local MyAudioBtn = Instance.new("TextButton", ButtonsContainer)
-MyAudioBtn.Size = UDim2.new(1, 0, 0, 24)
-MyAudioBtn.BackgroundColor3 = Color3.fromRGB(230, 0, 120)
-MyAudioBtn.Text = "🎧 ดูข้อมูลเพลงบนตัวเรา (Real-time)"
-MyAudioBtn.Font = Enum.Font.GothamBold
-MyAudioBtn.TextSize = 10
-MyAudioBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-Instance.new("UICorner", MyAudioBtn).CornerRadius = UDim.new(0, 4)
-
 StatusLabel = Instance.new("TextLabel", MainFrame)
 StatusLabel.Size = UDim2.new(0.68, 0, 0, 24)
 StatusLabel.Position = UDim2.new(0.03, 0, 0.86, 0)
@@ -476,56 +466,6 @@ Instance.new("UICorner", JunkBackBtn).CornerRadius = UDim.new(0, 5)
 local CurrentViewMode = 1
 local PlayerButtons = {}
 
--- ==================== ฟังก์ชันระบบส่องเพลงตัวเองแบบ Real-time ====================
-local function getAssetInfo(assetId)
-    local cleanId = tonumber(string.match(tostring(assetId), "%d+"))
-    if not cleanId then return { Title = "ไม่ระบุ", Creator = "ไม่ทราบชื่อ" } end
-    
-    if AssetCache[cleanId] then
-        return AssetCache[cleanId]
-    end
-
-    local info = { Title = "กำลังโหลด...", Creator = "กำลังโหลด..." }
-    task.spawn(function()
-        local success, result = pcall(function()
-            return MarketplaceService:GetProductInfo(cleanId, Enum.InfoType.Asset)
-        end)
-        if success and result then
-            info.Title = result.Name or "ไม่มีชื่อ"
-            info.Creator = (result.Creator and result.Creator.Name) or "ไม่ระบุ"
-            AssetCache[cleanId] = info
-        else
-            info.Title = "ไม่สามารถดึงข้อมูลได้ (ID ส่วนตัว/ลบแล้ว)"
-            info.Creator = "ไม่ระบุ"
-        end
-    end)
-    return info
-end
-
-local function getMyActiveSound()
-    local targets = {}
-    if LocalPlayer.Character then table.insert(targets, LocalPlayer.Character) end
-    local bp = LocalPlayer:FindFirstChild("Backpack")
-    if bp then table.insert(targets, bp) end
-    local veh = getPlayerVehicle(LocalPlayer)
-    if veh then table.insert(targets, veh) end
-
-    for _, parent in ipairs(targets) do
-        local success, descs = pcall(function() return parent:GetDescendants() end)
-        if success and descs then
-            for _, sound in ipairs(descs) do
-                if sound:IsA("Sound") and sound.IsPlaying and sound.SoundId ~= "" then
-                    local cleanId = string.match(sound.SoundId, "%d+")
-                    if cleanId and not BlockedIDs[cleanId] then
-                        return sound, cleanId
-                    end
-                end
-            end
-        end
-    end
-    return nil, nil
-end
-
 -- ==================== ระบบรีเฟรชผู้เล่น (Optimized - ไม่กระตุก) ====================
 local function refreshPlayers()
     if not ListScroll or not ListScroll:IsDescendantOf(game) then return end
@@ -593,43 +533,7 @@ function updateJunkViewerLive()
 
     local outputText = ""
 
-    if CurrentViewMode == 3 then
-        -- 🎧 โหมดส่องเพลงบนตัวเราแบบ Real-time
-        JunkTitle.Text = "MY REAL-TIME AUDIO INFO (เพลงบนตัวเรา)"
-        jStroke.Color = Color3.fromRGB(230, 0, 120)
-        JunkCopyBtn.BackgroundColor3 = Color3.fromRGB(230, 0, 120)
-
-        local soundObj, cleanId = getMyActiveSound()
-        if not soundObj or not cleanId then
-            outputText = "❌ ไม่พบเพลงที่กำลังเล่นอยู่บนตัวละครของคุณในขณะนี้..."
-        else
-            local info = getAssetInfo(cleanId)
-            local currentPos = soundObj.TimePosition or 0
-            local totalLength = soundObj.TimeLength or 0
-            local remaining = math.max(0, totalLength - currentPos)
-
-            local curMin = math.floor(currentPos / 60)
-            local curSec = math.floor(currentPos % 60)
-            local remMin = math.floor(remaining / 60)
-            local remSec = math.floor(remaining % 60)
-            local totMin = math.floor(totalLength / 60)
-            local totSec = math.floor(totalLength % 60)
-
-            outputText = string.format(
-                "🎧 ข้อมูลเพลงบนตัวคุณ (REAL-TIME):\n\n" ..
-                "📌 ชื่อเพลง: %s\n" ..
-                "👤 ผู้อัพโหลด: %s\n" ..
-                "🆔 Asset ID: %s\n" ..
-                "🔊 ระดับเสียง (Volume): %.1f\n" ..
-                "⏱️ เวลาที่เล่นไป: %02d:%02d / %02d:%02d\n" ..
-                "⏳ เวลาคงเหลือ: %02d:%02d\n\n" ..
-                "🔗 ลิงก์ตรง: https://www.roblox.com/library/%s",
-                info.Title, info.Creator, cleanId, soundObj.Volume or 1,
-                curMin, curSec, totMin, totSec,
-                remMin, remSec, cleanId
-            )
-        end
-    elseif CurrentSelectedPlayer then
+    if CurrentSelectedPlayer then
         local targetPlayer = Players:FindFirstChild(CurrentSelectedPlayer.Name)
         if not targetPlayer then return end
         
@@ -780,13 +684,6 @@ ViewInstantBtn.MouseButton1Click:Connect(function()
     else
         StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อนกดดู ID เจาะสด!"
     end
-end)
-
-MyAudioBtn.MouseButton1Click:Connect(function()
-    CurrentViewMode = 3
-    JunkFrame.Visible = true
-    updateJunkViewerLive()
-    StatusLabel.Text = "🎧 ส่องข้อมูลเพลงที่เปิดบนตัวเรา Real-time"
 end)
 
 JunkCopyBtn.MouseButton1Click:Connect(function()
