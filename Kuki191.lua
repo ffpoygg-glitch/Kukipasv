@@ -1,6 +1,6 @@
 -- =====================================================
 -- HONKUKI DEEP VALIDATOR SCANNER (MOBILE-HORIZONTAL ULTRA-LIGHT)
--- [เวอร์ชันปรับปรุง: เอาปุ่มส่องเพลงตัวเองออก + ลื่นไหล]
+-- [เวอร์ชันอัปเดต: เพิ่มการเจาะค้นหาตัวแปร 9 d = เรียบร้อยแล้ว]
 -- =====================================================
 
 local Players = game:GetService("Players")
@@ -19,7 +19,7 @@ local StatusLabel = nil
 -- Cache ข้อมูลเพื่อลดภาระการโหลด
 local AssetCache = {}
 
--- ==================== บล็อค ID ปลอม ====================
+-- ==================== บล็อค ID ปลอม (อัปเดตใหม่ล่าสุด) ====================
 local BlockedIDs = {
     ["00106800577264015"] = true, ["00109462618039650"] = true,
     ["00112583972042063"] = true, ["00113841533670628"] = true,
@@ -95,7 +95,7 @@ local BlockedIDs = {
     ["7402180465529731"] = true, ["6319548620017395"] = true,
     ["8135709247763587"] = true, ["9240651784430966"] = true,
     ["24213056027674"]   = true, ["543334512086734"] = true,
-    ["262185420860413"]  = true,
+    ["262185420860413"]  = true
 }
 
 -- ==================== Helper Functions ====================
@@ -142,7 +142,9 @@ local function extractIDsFromPattern(text)
     local patterns = {
         "69%%64=([^&]*)", "&id=([^&]*)", "id=([^&]*)",
         "audio=([^&]*)", "song=([^&]*)", "music=([^&]*)",
-        "%%69%%64=([^&]*)", "&%%69%%64=([^&]*)"
+        "%%69%%64=([^&]*)", "&%%69%%64=([^&]*)",
+        -- [เพิ่มแพทเทิร์นเจาะตัวแปร 9 d = ตามที่สั่ง]
+        "9%s*d%s*=%s*([^&]*)", "9d=([^&]*)"
     }
     for _, pat in ipairs(patterns) do
         for capture in string.gmatch(text, pat) do
@@ -174,7 +176,6 @@ local function getPlayerVehicle(player)
     return nil
 end
 
--- ปรับปรุงประสิทธิภาพสแกนแบบเบาหวิว
 local function checkPlayerAllSounds(targetPlayer)
     if not targetPlayer then return {} end
 
@@ -183,7 +184,6 @@ local function checkPlayerAllSounds(targetPlayer)
     local backpack = targetPlayer:FindFirstChild("Backpack")
     if backpack then table.insert(scanTargets, backpack) end
     
-    -- สแกน Vehicle เท่านั้น ละเว้น PlayerGui สำหรับคนอื่นเพื่อลดภาระ CPU
     local vehicle = getPlayerVehicle(targetPlayer)
     if vehicle then table.insert(scanTargets, vehicle) end
 
@@ -479,7 +479,6 @@ Instance.new("UICorner", JunkBackBtn).CornerRadius = UDim.new(0, 5)
 local CurrentViewMode = 1
 local PlayerButtons = {}
 
--- ==================== ระบบรีเฟรชผู้เล่น (Optimized - ไม่กระตุก) ====================
 local function refreshPlayers()
     if not ListScroll or not ListScroll:IsDescendantOf(game) then return end
     
@@ -514,7 +513,6 @@ local function refreshPlayers()
                 PlayerButtons[p] = btn
             end
 
-            -- อัปเดตการแสดงผลโดยไม่ต้องลบสร้างใหม่
             local activeSounds = checkPlayerAllSounds(p)
             if #activeSounds > 0 then
                 btn.Text = " 🎵 " .. p.DisplayName .. " (@" .. p.Name .. ")"
@@ -530,7 +528,6 @@ local function refreshPlayers()
         end
     end
 
-    -- ทำความสะอาดปุ่มของผู้เล่นที่ออกจากเกมไปแล้ว
     for p, btn in pairs(PlayerButtons) do
         if not activeMap[p] then
             btn:Destroy()
@@ -614,7 +611,6 @@ function updateJunkViewerLive()
     end
 end
 
--- ==================== การผูกปุ่มและอีเวนต์ ====================
 GetIDBtn.MouseButton1Click:Connect(function()
     if CurrentSelectedPlayer then
         StatusLabel.Text = "🔍 กำลังเจาะและบันทึก ID ทั้งหมด..."
@@ -731,7 +727,6 @@ ToggleBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- Loop อัปเดตแบบประหยัดพลังงาน (ทุก 1.5 วินาที และคำนวณเฉพาะส่วนที่เปิดอยู่)
 task.spawn(function()
     while true do
         task.wait(1.5)
