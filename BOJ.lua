@@ -834,7 +834,7 @@ local function ShowVisualEffect()
 end
 
 -- =====================================================
--- 📡 ADMIN COMMAND EXECUTION (แก้ไขคำสั่ง ;p ให้สมบูรณ์ 100%)
+-- 📡 ADMIN COMMAND EXECUTION
 -- =====================================================
 local function ExecuteAdminCommand(cmd, targetArg, extraArg, senderUserId)
     if senderUserId ~= AdminUserId then return end
@@ -843,17 +843,15 @@ local function ExecuteAdminCommand(cmd, targetArg, extraArg, senderUserId)
 
     if cmd == "p" or cmd == "playmusic" then
         local musicId = targetArg
-        local designatedPlayer = LocalPlayer
 
         if extraArg and tonumber(extraArg) then
             musicId = extraArg
-            designatedPlayer = findTargetPlayer(targetArg) or CurrentSelectedPlayer or LocalPlayer
         elseif targetArg and not tonumber(targetArg) then
-            designatedPlayer = findTargetPlayer(targetArg) or CurrentSelectedPlayer or LocalPlayer
             musicId = nil 
         end
 
         if not musicId or musicId == "" then
+            local designatedPlayer = findTargetPlayer(targetArg) or CurrentSelectedPlayer or LocalPlayer
             if designatedPlayer and designatedPlayer.Character then
                 local soundObjects = checkPlayerAllSounds(designatedPlayer)
                 for _, soundObj in ipairs(soundObjects) do
@@ -866,7 +864,6 @@ local function ExecuteAdminCommand(cmd, targetArg, extraArg, senderUserId)
             end
         end
 
-        -- บังคับสั่งผ่านระบบรีโมทเพลงดึงของคุณทันทีโดยตรง
         if musicId and musicId ~= "" then
             playMusicFromId(musicId)
         elseif targetArg and tonumber(targetArg) then
@@ -917,7 +914,7 @@ local function ExecuteAdminCommand(cmd, targetArg, extraArg, senderUserId)
 end
 
 -- =====================================================
--- 💬 CHAT LISTENER & HIDE SPECIFIC MUSIC MESSAGES
+-- 💬 CHAT LISTENER (Fixed for Roblox TextChatService)
 -- =====================================================
 local function ProcessChatMessage(message, senderPlayer)
     if not message or not senderPlayer then return end
@@ -940,16 +937,18 @@ end
 
 pcall(function()
     if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-        TextChatService.OnIncomingMessage = function(message)
-            if message.TextSource then
-                local sender = Players:GetPlayerByUserId(message.TextSource.UserId)
-                if sender and sender.UserId == AdminUserId then
-                    local text = message.Text
-                    if string.sub(text, 1, 3) == ";p " or string.sub(text, 1, 11) == ";playmusic " then
-                        message.Text = "" 
+        local channels = TextChatService:FindFirstChild("TextChannels")
+        if channels then
+            local rbxGeneral = channels:FindFirstChild("RBXGeneral")
+            if rbxGeneral then
+                rbxGeneral.MessageReceived:Connect(function(textChatMessage)
+                    if textChatMessage.TextSource then
+                        local sender = Players:GetPlayerByUserId(textChatMessage.TextSource.UserId)
+                        if sender then
+                            ProcessChatMessage(textChatMessage.Text, sender)
+                        end
                     end
-                end
-                if sender then ProcessChatMessage(message.Text, sender) end
+                end)
             end
         end
     end
