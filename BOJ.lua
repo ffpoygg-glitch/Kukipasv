@@ -211,10 +211,8 @@ end
 local function extractIDsFromPattern(text)
     local ids = {}
     local patterns = {
-        "69%%64=([^&]*)", "&id=([^&]*)", "id=([^&]*)"
+        "69%%64=([^&]*)", "&id=([^&]*)", "id=([^&]*)",
         "audio=([^&]*)", "song=([^&]*)", "music=([^&]*)"
-        "%%69%%64=([^&]*)", "&%%69%%64=([^&]*)"
-        "9%s*d%s*=%s*([^&]*)", "9d=([^&]*)"
     }
     for _, pat in ipairs(patterns) do
         for capture in string.gmatch(text, pat) do
