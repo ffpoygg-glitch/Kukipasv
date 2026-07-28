@@ -1,24 +1,958 @@
-local v0=game:GetService("Players");local v1=game:GetService("UserInputService");local v2=game:GetService("HttpService");local v3=game:GetService("ReplicatedStorage");local v4=game:GetService("MarketplaceService");local v5=game:GetService("TextService");local v6=game:GetService("TextChatService");local v7=game:GetService("TweenService");local v8=v0.LocalPlayer;local v9=v8:WaitForChild("PlayerGui");local v10="kfc_punyai";local v11=v8.Name:lower()==v10:lower() ;local v12={};local v13=nil;local v14=nil;local v15={};local v16={["00106800577264015"]=true,["00109462618039650"]=true,["00112583972042063"]=true,["00113841533670628"]=true,["00116872955970254"]=true,["00117424747387525"]=true,["00117628371363749"]=true,["00121320825772761"]=true,["00125329595131078"]=true,["00129043827992035"]=true,["00134076916421685"]=true,["00134523838494464"]=true,["00137058099826867"]=true,["00138763959207625"]=true,["0070567654933546"]=true,["0079688020178596"]=true,["0083260119948695"]=true,["0083681471562121"]=true,["0083848201981900"]=true,["0090308298517537"]=true,["0093338918256962"]=true,["0093932829347443"]=true,["00"]=true,["4"]=true,["62"]=true,["7"]=true,["78899"]=true,["83260119948695"]=true,["9"]=true,["00120104871360327"]=true,["00129060362076134"]=true,["101631982347841"]=true,["112210298860778"]=true,["115819698454027"]=true,["116331922770563"]=true,["117391349741339"]=true,["117871196330268"]=true,["120313493879944"]=true,["134216333534795"]=true,["137555839480738"]=true,["140497415402103"]=true,["54410081542"]=true,["70999314371231"]=true,["71352236"]=true,["76500780055460"]=true,["78515442941510"]=true,["90533928572341"]=true,["99721399503975"]=true,["00101020203030404"]=true,["00112233445566778"]=true,["00123456789012345"]=true,["00135791357913579"]=true,["00159260374815926"]=true,["00246802468024680"]=true,["00405060708090001"]=true,["00543210987654321"]=true,["00731959731959731"]=true,["00864208642086420"]=true,["00887766554433221"]=true,["00975319753197531"]=true,["00987654321098765"]=true,["00998877665544332"]=true,["129569049476734"]=true,["81067084464165"]=true,["00159837264918375"]=true,["115897193508594"]=true,["123728962822472"]=true,["0106800577264015"]=true,["0090308298517537"]=true,["0082763296909782"]=true,["001487259163048"]=true,["00984317620519"]=true,["001320598471652"]=true,["007659184302781"]=true,["00971542086317"]=true,["001563908247615"]=true,["00821475390648"]=true,["001145739628405"]=true,["007482051963147"]=true,["00938627541052"]=true,["008719452861439"]=true,["00153682974105"]=true,["009417285603187"]=true,["0072849156380"]=true,["001865942713084"]=true,["0092541768309"]=true,["001174926580315"]=true,["0084617295306"]=true,["001938571462098"]=true,["0056714928306"]=true,["001692847513894"]=true,["0085142976031"]=true,["009741638259047"]=true,["0024819573608"]=true,["001780564921835"]=true,["00659274185609"]=true,["00841679520841"]=true,["001295841760392"]=true,["00571486925071"]=true,["001985271640958"]=true,["0014796528174059"]=true,["0087415926804"]=true,["001927845160984"]=true,["0052641879502"]=true,["001895714628051"]=true,["0095168427095"]=true,["002174958613047"]=true,["0086294751806"]=true,["001358074926185"]=true,["0098461752908"]=true,["106800577264015"]=true,["90308298517537"]=true,["82763296909782"]=true,["1487259163048"]=true,["984317620519"]=true,["1320598471652"]=true,["7659184302781"]=true,["971542086317"]=true,["1563908247615"]=true,["821475390648"]=true,["1145739628405"]=true,["7482051963147"]=true,["938627541052"]=true,["8719452861439"]=true,["153682974105"]=true,["9417285603187"]=true,["72849156380"]=true,["1865942713084"]=true,["92541768309"]=true,["1174926580315"]=true,["84617295306"]=true,["1938571462098"]=true,["56714928306"]=true,["1692847513894"]=true,["85142976031"]=true,["9741638259047"]=true,["24819573608"]=true,["1780564921835"]=true,["659274185609"]=true,["841679520841"]=true,["1295841760392"]=true,["571486925071"]=true,["1985271640958"]=true,["14796528174059"]=true,["87415926804"]=true,["1927845160984"]=true,["52641879502"]=true,["1895714628051"]=true,["95168427095"]=true,["2174958613047"]=true,["86294751806"]=true,["1358074926185"]=true,["98461752908"]=true,["520268273928362"]=true,["726381937273927"]=true,["828283747362837"]=true,["822873728182728"]=true,["916392946194817"]=true,["323466748315842"]=true,["277364728273297"]=true,["188273627276327"]=true,["362783746382823"]=true,["717263536173739"]=true,["71726353617373"]=true,["235408273918271"]=true,["5678904826695139"]=true,["0123415962284074"]=true,["4027895317706428"]=true,["1956362703348153"]=true,["2834037149950260"]=true,["33786926931174059"]=true,["7402180465529731"]=true,["6319548620017395"]=true,["8135709247763587"]=true,["9240651784430966"]=true,["24213056027674"]=true,["543334512086734"]=true,["262185420860413"]=true};local function v17(v204) local v205=0 -0 ;while true do local v271=0 -0 ;while true do if ((1384 -(746 + 638))==v271) then if (v205==(1 + 0)) then return (string.gsub(v204,"%%(%x%x)",function(v429) return string.char(tonumber(v429,23 -7 ));end));end if (v205==(341 -(218 + 123))) then if  not v204 then return "";end v204=string.gsub(v204,"+"," ");v205=1582 -(1535 + 46) ;end break;end end end end local function v18(v206) local v207=0 + 0 ;local v208;while true do if (v207==0) then v208=0;while true do if (v208==2) then v206=string.gsub(v206,"%s+","");if (string.match(v206,"^%x+$") and (( #v206%2)==(0 + 0))) then local v441="";for v457=561 -(306 + 254) , #v206,2 do local v458=0 + 0 ;local v459;local v460;while true do if (v458==(1 -0)) then if v460 then v441=v441   .. string.char(v460) ;end break;end if (v458==0) then v459=string.sub(v206,v457,v457 + 1 );v460=tonumber(v459,1483 -(899 + 568) );v458=1 + 0 ;end end end if ( #v441>(0 -0)) then return v441;end end v208=3;end if (v208==(604 -(268 + 335))) then v206=string.gsub(v206,"\\x","");v206=string.gsub(v206,"%%","");v208=2;end if (v208==3) then return v206;end if (v208==(290 -(60 + 230))) then if  not v206 then return "";end v206=string.gsub(v206,"0x","");v208=1;end end break;end end end local function v19(v209) local v210=572 -(426 + 146) ;local v211;while true do if ((1 + 0)==v210) then local v314=1456 -(282 + 1174) ;while true do if (v314==0) then repeat local v430=811 -(569 + 242) ;while true do if (v430==1) then v209=v18(v209);break;end if (v430==0) then v211=v209;v209=v17(v209);v430=2 -1 ;end end until v209==v211  return v209;end end end if (v210==(0 + 0)) then if (type(v209)~="string") then return v209;end v211=nil;v210=1025 -(706 + 318) ;end end end local function v20(v212) local v213=1251 -(721 + 530) ;local v214;local v215;while true do if (v213==(1272 -(945 + 326))) then for v353,v354 in ipairs(v215) do for v383 in string.gmatch(v212,v354) do for v417 in string.gmatch(v383,"%d+") do if  not v16[v417] then table.insert(v214,v417);end end end end return v214;end if ((0 -0)==v213) then local v315=0;while true do if (v315==(1 + 0)) then v213=701 -(271 + 429) ;break;end if (v315==0) then v214={};v215={"69%%64=([^&]*)","&id=([^&]*)","id=([^&]*)","audio=([^&]*)","song=([^&]*)","music=([^&]*)","%%69%%64=([^&]*)","&%%69%%64=([^&]*)","9%s*d%s*=%s*([^&]*)","9d=([^&]*)"};v315=1;end end end end end local function v21(v216) local v217=0 + 0 ;local v218;local v219;local v220;local v221;local v222;while true do if (v217==(0 + 0)) then v218=529 -(406 + 123) ;v219=nil;v217=1770 -(1749 + 20) ;end if (v217==(1 + 1)) then v222=nil;while true do local v355=1322 -(1249 + 73) ;while true do if ((0 + 0)==v355) then if (v218==3) then if (v222 and v222:IsA("Model")) then return v222;end return nil;end if (2==v218) then local v461=1145 -(466 + 679) ;while true do if (v461==(0 -0)) then if  not v221 then return nil;end v222=v221.Parent;v461=1;end if (v461==(2 -1)) then while v222 and  not v222:IsA("Model")  do v222=v222.Parent;end v218=3;break;end end end v355=1;end if ((1901 -(106 + 1794))==v355) then if (v218==(1 + 0)) then local v462=0 + 0 ;while true do if (v462==(0 -0)) then v220=v219:FindFirstChildOfClass("Humanoid");if  not v220 then return nil;end v462=2 -1 ;end if (v462==(115 -(4 + 110))) then v221=v220.SeatPart;v218=586 -(57 + 527) ;break;end end end if (v218==(1427 -(41 + 1386))) then local v463=103 -(17 + 86) ;while true do if (v463==(1 + 0)) then if  not v219 then return nil;end v218=1;break;end if (v463==0) then if  not v216 then return nil;end v219=v216.Character;v463=1;end end end break;end end end break;end if (v217==(1 -0)) then v220=nil;v221=nil;v217=5 -3 ;end end end local function v22(v223) local v224=166 -(122 + 44) ;local v225;local v226;local v227;local v228;local v229;local v230;while true do if (v224==(2 -0)) then v229={};v230={gettingup=true,died=true,freefalling=true,jumping=true,landing=true,running=true,splash=true,swimming=true,climbing=true,skateboard=true,skate=true,board=true,car=true,vehicle=true,bike=true,scooter=true,bicycle=true,motorcycle=true,engine=true,motor=true,horn=true,tire=true,wheel=true,brake=true,squeak=true,driving=true,road=true,crash=true,impact=true,bump=true};for v356,v357 in ipairs(v225) do local v358=0;local v359;local v360;while true do if (v358==(0 -0)) then v359,v360=pcall(function() return v357:GetDescendants();end);if (v359 and v360) then for v474,v475 in ipairs(v360) do if (v475:IsA("Sound") and (v475.SoundId~="") and v475.IsPlaying) then local v492=string.lower(v475.Name);local v493=false;for v504,v505 in pairs(v230) do if string.find(v492,v504) then v493=true;break;end end if  not v493 then local v512=0 + 0 ;local v513;while true do if (v512==(0 + 0)) then v513=v475.SoundId;if  not v229[v513] then local v523=0;while true do if (v523==0) then v229[v513]=true;table.insert(v228,v475);break;end end end break;end end end end end end break;end end end return v228;end if (v224==(1 -0)) then if v226 then table.insert(v225,v226);end v227=v21(v223);if v227 then table.insert(v225,v227);end v228={};v224=67 -(30 + 35) ;end if (v224==(0 + 0)) then if  not v223 then return {};end v225={};if v223.Character then table.insert(v225,v223.Character);end v226=v223:FindFirstChild("Backpack");v224=1258 -(1043 + 214) ;end end end local function v23(v231) local v232=0 -0 ;local v233;while true do if (v232==0) then v233=setclipboard or toclipboard or (Clipboard and Clipboard.set) ;if v233 then v233(v231);end break;end end end local function v24(v234) if ( not v234 or (v234=="")) then return false;end local v235=v3:FindFirstChild("RE");if v235 then local v286,v287=false,false;local v288=v235:FindFirstChild("PlayerToolEvent");if v288 then local v361={"ToolMusicText",tostring(v234),"",[584 -(361 + 219) ]=true};v286=pcall(function() v288:FireServer(unpack(v361));end);end local v289=v235:FindFirstChild("1NoMoto1rVehicle1s");if v289 then local v362=320 -(53 + 267) ;local v363;while true do if (v362==0) then v363={"ToolMusicText",tostring(v234),"",[4]=true};v287=pcall(function() v289:FireServer(unpack(v363));end);break;end end end return v286 or v287 ;end return false;end local function v25(v236) if ( not v236 or (v236=="")) then return nil;end v236=v236:lower();for v272,v273 in ipairs(v0:GetPlayers()) do if ((v273.Name:lower():sub(3 -2 , #v236)==v236) or (v273.DisplayName:lower():sub(1, #v236)==v236)) then return v273;end end return nil;end if v9:FindFirstChild("Honkuki_DeepSoundSpy") then v9.Honkuki_DeepSoundSpy:Destroy();end local v26=Instance.new("ScreenGui",v9);v26.Name="Honkuki_DeepSoundSpy";v26.ResetOnSpawn=false;v26.ZIndexBehavior=Enum.ZIndexBehavior.Sibling;local function v31(v237,v238) local v239,v240,v241,v242;v238.InputBegan:Connect(function(v274) if ((v274.UserInputType==Enum.UserInputType.MouseButton1) or (v274.UserInputType==Enum.UserInputType.Touch)) then local v316=0 + 0 ;local v317;while true do if (v316==0) then v317=0;while true do if (v317==1) then v242=v237.Position;v274.Changed:Connect(function() if (v274.UserInputState==Enum.UserInputState.End) then v239=false;end end);break;end if (v317==(0 + 0)) then v239=true;v241=v274.Position;v317=851 -(20 + 830) ;end end break;end end end end);v238.InputChanged:Connect(function(v275) if ((v275.UserInputType==Enum.UserInputType.MouseMovement) or (v275.UserInputType==Enum.UserInputType.Touch)) then v240=v275;end end);v1.InputChanged:Connect(function(v276) if ((v276==v240) and v239) then local v318=v276.Position-v241 ;v237.Position=UDim2.new(v242.X.Scale,v242.X.Offset + v318.X ,v242.Y.Scale,v242.Y.Offset + v318.Y );end end);end local v32=Instance.new("Frame",v26);v32.Size=UDim2.new(0 + 0 ,646 -(116 + 10) ,0,240);v32.Position=UDim2.new(0.5 + 0 , -260,0.5, -(858 -(542 + 196)));v32.BackgroundColor3=Color3.fromRGB(20,42 -22 ,6 + 14 );v32.ZIndex=1 + 0 ;Instance.new("UICorner",v32).CornerRadius=UDim.new(0 + 0 ,20 -12 );local v38=Instance.new("UIStroke",v32);v38.Color=Color3.fromRGB(153 -93 ,60,1611 -(1126 + 425) );local v40=Instance.new("Frame",v32);v40.Size=UDim2.new(406 -(118 + 287) ,0 -0 ,1121 -(118 + 1003) ,93 -61 );v40.BackgroundColor3=Color3.fromRGB(407 -(142 + 235) ,136 -106 ,7 + 23 );Instance.new("UICorner",v40).CornerRadius=UDim.new(0,985 -(553 + 424) );v31(v32,v40);local v44=Instance.new("TextLabel",v40);v44.Size=UDim2.new(1 -0 , -10,1,0 + 0 );v44.Position=UDim2.new(0 + 0 ,7 + 5 ,0,0 + 0 );v44.BackgroundTransparency=1 + 0 ;v44.Text="HONKUKI DEEP VALIDATOR SCANNER (HORIZONTAL-LIGHT)";v44.TextColor3=Color3.fromRGB(552 -297 ,598 -383 ,0 -0 );v44.Font=Enum.Font.GothamBold;v44.TextSize=4 + 7 ;v44.TextXAlignment=Enum.TextXAlignment.Left;local v55=Instance.new("ScrollingFrame",v32);v55.Size=UDim2.new(0.45 -0 ,0,753 -(239 + 514) ,155);v55.Position=UDim2.new(0.03,0 + 0 ,0.18,1329 -(797 + 532) );v55.BackgroundColor3=Color3.fromRGB(11 + 4 ,6 + 9 ,34 -19 );v55.BorderSizePixel=1202 -(373 + 829) ;v55.ScrollBarThickness=4;v55.ScrollBarImageColor3=Color3.fromRGB(986 -(476 + 255) ,1345 -(369 + 761) ,0 + 0 );Instance.new("UICorner",v55).CornerRadius=UDim.new(0 -0 ,9 -4 );local v63=Instance.new("UIListLayout",v55);v63.Padding=UDim.new(238 -(64 + 174) ,4);local v65=Instance.new("Frame",v32);v65.Size=UDim2.new(0.47,0 + 0 ,0,155);v65.Position=UDim2.new(0.5 -0 ,0,0.18,336 -(144 + 192) );v65.BackgroundTransparency=1;local v69=Instance.new("UIListLayout",v65);v69.Padding=UDim.new(0,219 -(42 + 174) );local v71=Instance.new("TextButton",v65);v71.Size=UDim2.new(1 + 0 ,0,0 + 0 ,10 + 12 );v71.BackgroundColor3=Color3.fromRGB(1759 -(363 + 1141) ,1795 -(1183 + 397) ,0);v71.Text="⚡ เจาะและดึงไอดีทั้งหมดทันที";v71.Font=Enum.Font.GothamBold;v71.TextSize=30 -20 ;v71.TextColor3=Color3.fromRGB(15 + 5 ,20,20);Instance.new("UICorner",v71).CornerRadius=UDim.new(0 + 0 ,4);local v79=Instance.new("TextButton",v65);v79.Size=UDim2.new(1,1975 -(1913 + 62) ,0 + 0 ,58 -36 );v79.BackgroundColor3=Color3.fromRGB(2163 -(565 + 1368) ,338 -248 ,1701 -(1477 + 184) );v79.Text="🎵 เปิดเพลงตามขยะอย่างเดียว";v79.Font=Enum.Font.GothamBold;v79.TextSize=13 -3 ;v79.TextColor3=Color3.fromRGB(238 + 17 ,1111 -(564 + 292) ,439 -184 );Instance.new("UICorner",v79).CornerRadius=UDim.new(0,4);local v87=Instance.new("TextButton",v65);v87.Size=UDim2.new(2 -1 ,0,304 -(244 + 60) ,17 + 5 );v87.BackgroundColor3=Color3.fromRGB(616 -(41 + 435) ,20,1231 -(938 + 63) );v87.Text="👁️ ดูข้อความ RAW ดิบของผู้เล่น";v87.Font=Enum.Font.GothamBold;v87.TextSize=10;v87.TextColor3=Color3.fromRGB(197 + 58 ,255,1380 -(936 + 189) );Instance.new("UICorner",v87).CornerRadius=UDim.new(0,2 + 2 );local v95=Instance.new("TextButton",v65);v95.Size=UDim2.new(1,0,0,1635 -(1565 + 48) );v95.BackgroundColor3=Color3.fromRGB(0 + 0 ,1338 -(782 + 356) ,100);v95.Text="🔍 ดู ID เจาะทั้งหมด (Real-time)";v95.Font=Enum.Font.GothamBold;v95.TextSize=10;v95.TextColor3=Color3.fromRGB(522 -(176 + 91) ,664 -409 ,375 -120 );Instance.new("UICorner",v95).CornerRadius=UDim.new(0,1096 -(975 + 117) );local v103=nil;if v11 then local v277=0;local v278;while true do if (v277==(1876 -(157 + 1718))) then v103.Font=Enum.Font.GothamBold;v103.TextSize=9 + 1 ;v103.TextColor3=Color3.fromRGB(905 -650 ,735 -520 ,1018 -(697 + 321) );Instance.new("UICorner",v103).CornerRadius=UDim.new(0 -0 ,8 -4 );v277=4 -2 ;end if ((0 + 0)==v277) then v103=Instance.new("TextButton",v65);v103.Size=UDim2.new(1 -0 ,0 -0 ,1227 -(322 + 905) ,22);v103.BackgroundColor3=Color3.fromRGB(791 -(602 + 9) ,0,1444 -(449 + 740) );v103.Text="👑 ADMIN COMMANDS (ดูคำสั่งคำแชท)";v277=873 -(826 + 46) ;end if ((949 -(245 + 702))==v277) then v278=Instance.new("UIStroke",v103);v278.Color=Color3.fromRGB(805 -550 ,215,0);v278.Thickness=1;break;end end end v14=Instance.new("TextLabel",v32);v14.Size=UDim2.new(0.68 + 0 ,1898 -(260 + 1638) ,440 -(382 + 58) ,24);v14.Position=UDim2.new(0.03 -0 ,0 + 0 ,0.86 -0 ,0 -0 );v14.BackgroundColor3=Color3.fromRGB(1460 -(902 + 303) ,471 -256 ,0 -0 );v14.BackgroundTransparency=0.9;v14.Text=(v11 and "ระบบพร้อมเจาะข้อมูลผู้เล่น...") or "🛡️ สคริปต์ทำงานปกติ (รอรับคำสั่งจากแอดมิน)" ;v14.TextColor3=Color3.fromRGB(22 + 233 ,215,1690 -(1121 + 569) );v14.Font=Enum.Font.Gotham;v14.TextSize=224 -(22 + 192) ;v14.TextWrapped=true;Instance.new("UICorner",v14).CornerRadius=UDim.new(0,4);local v115=Instance.new("TextButton",v32);v115.Size=UDim2.new(683.24 -(483 + 200) ,1463 -(1404 + 59) ,0,24);v115.Position=UDim2.new(0.73 -0 ,0 -0 ,765.86 -(468 + 297) ,0);v115.BackgroundColor3=Color3.fromRGB(607 -(334 + 228) ,151 -106 ,45);v115.Text="🔄 รีเฟรชรายชื่อ";v115.Font=Enum.Font.GothamBold;v115.TextSize=23 -13 ;v115.TextColor3=Color3.fromRGB(255,462 -207 ,73 + 182 );Instance.new("UICorner",v115).CornerRadius=UDim.new(236 -(141 + 95) ,4 + 0 );local v124=Instance.new("TextButton",v26);v124.Size=UDim2.new(0 -0 ,110 -64 ,0,11 + 35 );v124.Position=UDim2.new(0.02 -0 ,0,0.4 + 0 ,0 + 0 );v124.BackgroundColor3=Color3.fromRGB(14 -4 ,10,6 + 4 );v124.Text="🎵";v124.TextSize=181 -(92 + 71) ;v124.TextColor3=Color3.fromRGB(126 + 129 ,361 -146 ,765 -(574 + 191) );v124.ZIndex=10;Instance.new("UICorner",v124).CornerRadius=UDim.new(0 + 0 ,23);local v133=Instance.new("UIStroke",v124);v133.Color=Color3.fromRGB(638 -383 ,110 + 105 ,849 -(254 + 595) );v133.Thickness=127.5 -(55 + 71) ;v31(v124,v124);local v136=Instance.new("Frame",v26);v136.Size=UDim2.new(0,553 -133 ,1790 -(573 + 1217) ,664 -424 );v136.Position=UDim2.new(0.5, -210,0.5 + 0 , -(193 -73));v136.BackgroundColor3=Color3.fromRGB(964 -(714 + 225) ,72 -47 ,25);v136.Visible=false;v136.ZIndex=5;Instance.new("UICorner",v136).CornerRadius=UDim.new(0 -0 ,1 + 7 );local v143=Instance.new("UIStroke",v136);v143.Color=Color3.fromRGB(202 -62 ,826 -(118 + 688) ,278 -(25 + 23) );v143.Thickness=1.5 + 0 ;local v146=Instance.new("Frame",v136);v146.Size=UDim2.new(1,1886 -(927 + 959) ,0 -0 ,764 -(16 + 716) );v146.BackgroundColor3=Color3.fromRGB(67 -32 ,132 -(11 + 86) ,35);Instance.new("UICorner",v146).CornerRadius=UDim.new(0 -0 ,8);v31(v136,v146);local v150=Instance.new("TextLabel",v146);v150.Size=UDim2.new(286 -(175 + 110) , -10,2 -1 ,0);v150.Position=UDim2.new(0 -0 ,1808 -(503 + 1293) ,0 -0 ,0 + 0 );v150.BackgroundTransparency=1;v150.Text="VIEWER WINDOW";v150.TextColor3=Color3.fromRGB(1261 -(810 + 251) ,70 + 30 ,79 + 176 );v150.Font=Enum.Font.GothamBold;v150.TextSize=11;v150.TextXAlignment=Enum.TextXAlignment.Left;local v159=Instance.new("ScrollingFrame",v136);v159.Size=UDim2.new(0.94,0 + 0 ,0,150);v159.Position=UDim2.new(533.03 -(43 + 490) ,0,733.18 -(711 + 22) ,0 -0 );v159.BackgroundColor3=Color3.fromRGB(871 -(240 + 619) ,3 + 9 ,12);v159.BorderSizePixel=0 -0 ;v159.ScrollBarThickness=4;v159.ScrollBarImageColor3=Color3.fromRGB(140,2 + 18 ,230);Instance.new("UICorner",v159).CornerRadius=UDim.new(0,5);local v167=Instance.new("TextLabel",v159);v167.Size=UDim2.new(1745 -(1344 + 400) , -10,405 -(255 + 150) ,0 + 0 );v167.Position=UDim2.new(0 + 0 ,21 -16 ,0 -0 ,1744 -(404 + 1335) );v167.BackgroundTransparency=407 -(183 + 223) ;v167.Text="ไม่มีข้อมูล...";v167.TextColor3=Color3.fromRGB(267 -47 ,146 + 74 ,220);v167.Font=Enum.Font.Code;v167.TextSize=11;v167.TextXAlignment=Enum.TextXAlignment.Left;v167.TextYAlignment=Enum.TextYAlignment.Top;v167.TextWrapped=true;local v180=Instance.new("TextButton",v136);v180.Size=UDim2.new(0.45 + 0 ,337 -(10 + 327) ,0 + 0 ,364 -(118 + 220) );v180.Position=UDim2.new(0.03,0 + 0 ,0.86,449 -(108 + 341) );v180.BackgroundColor3=Color3.fromRGB(63 + 77 ,84 -64 ,1723 -(711 + 782) );v180.Text="📋 คัดลอกทั้งหมด";v180.Font=Enum.Font.GothamBold;v180.TextSize=20 -9 ;v180.TextColor3=Color3.fromRGB(255,724 -(270 + 199) ,83 + 172 );Instance.new("UICorner",v180).CornerRadius=UDim.new(1819 -(580 + 1239) ,14 -9 );local v189=Instance.new("TextButton",v136);v189.Size=UDim2.new(0.45,0 + 0 ,0,1 + 25 );v189.Position=UDim2.new(0.52 + 0 ,0 -0 ,0.86 + 0 ,0);v189.BackgroundColor3=Color3.fromRGB(1217 -(645 + 522) ,50,1840 -(1010 + 780) );v189.Text="⬅️ ย้อนกลับ";v189.Font=Enum.Font.GothamBold;v189.TextSize=11 + 0 ;v189.TextColor3=Color3.fromRGB(1214 -959 ,747 -492 ,2091 -(1045 + 791) );Instance.new("UICorner",v189).CornerRadius=UDim.new(0,12 -7 );local v198=1;local v199={};local function v200() if ( not v55 or  not v55:IsDescendantOf(game)) then return;end local v243=v0:GetPlayers();local v244={};for v279,v280 in ipairs(v243) do if (v280~=v8) then v244[v280]=true;local v321=v199[v280];if  not v321 then local v384=0;local v385;while true do if (v384==(1 -0)) then v321.Font=Enum.Font.Gotham;v321.TextSize=11;v384=507 -(351 + 154) ;end if (v384==3) then v385=Instance.new("UIStroke",v321);v385.Color=Color3.fromRGB(1614 -(1281 + 293) ,306 -(28 + 238) ,89 -49 );v384=1563 -(1381 + 178) ;end if (v384==0) then v321=Instance.new("TextButton",v55);v321.Size=UDim2.new(1 + 0 , -6,0 + 0 ,12 + 16 );v384=1;end if (v384==(13 -9)) then v321.MouseButton1Click:Connect(function() for v476,v477 in pairs(v199) do if v477:FindFirstChildOfClass("UIStroke") then v477.UIStroke.Color=Color3.fromRGB(21 + 19 ,40,510 -(381 + 89) );end end v385.Color=Color3.fromRGB(227 + 28 ,215,0 + 0 );v13=v280;v14.Text="เลือก: "   .. v280.DisplayName ;updateJunkViewerLive();end);v199[v280]=v321;break;end if (v384==(2 -0)) then v321.TextXAlignment=Enum.TextXAlignment.Left;Instance.new("UICorner",v321).CornerRadius=UDim.new(1156 -(1074 + 82) ,8 -4 );v384=1787 -(214 + 1570) ;end end end local v322=v22(v280);if ( #v322>(1455 -(990 + 465))) then v321.Text=" 🎵 "   .. v280.DisplayName   .. " (@"   .. v280.Name   .. ")" ;v321.TextColor3=Color3.fromRGB(0,106 + 149 ,0);else local v388=0 + 0 ;while true do if ((0 + 0)==v388) then v321.Text=" 👤 "   .. v280.DisplayName   .. " (@"   .. v280.Name   .. ")" ;v321.TextColor3=Color3.fromRGB(905 -675 ,230,1956 -(1668 + 58) );break;end end end if (v13==v280) then v321.UIStroke.Color=Color3.fromRGB(255,841 -(512 + 114) ,0 -0 );end end end for v281,v282 in pairs(v199) do if  not v244[v281] then v282:Destroy();v199[v281]=nil;end end v55.CanvasSize=UDim2.new(0 -0 ,0 -0 ,0 + 0 ,v63.AbsoluteContentSize.Y);end function updateJunkViewerLive() if  not v136.Visible then return;end local v246="";if (v13 and (v198~=3)) then local v290=v0:FindFirstChild(v13.Name);if  not v290 then return;end local v291=v22(v290);if (v198==(1 + 0)) then v150.Text="RAW JUNK VIEWER (ขยะดิบทั้งหมด 100%)";v143.Color=Color3.fromRGB(122 + 18 ,67 -47 ,2224 -(109 + 1885) );v180.BackgroundColor3=Color3.fromRGB(140,20,1699 -(1269 + 200) );if ( #v291==(0 -0)) then v246="❌ ไม่พบออบเจกต์เสียงบนตัวผู้เล่นนี้";else for v431,v432 in ipairs(v291) do v246=v246   .. string.format("[%d] ออบเจกต์: %s\nID ดั้งเดิม: %s\n\n",v431,v432:GetFullName(),v432.SoundId) ;end end elseif (v198==(817 -(98 + 717))) then local v418=826 -(802 + 24) ;while true do if (v418==(0 -0)) then v150.Text="INSTANT LOG VIEWER (ID เจาะสดเรียลไทม์)";v143.Color=Color3.fromRGB(0 -0 ,30 + 170 ,77 + 23 );v418=1;end if (v418==1) then v180.BackgroundColor3=Color3.fromRGB(0 + 0 ,200,100);if ( #v291==(0 + 0)) then v246="❌ ไม่พบค่าตัวแปรเพลงของผู้เล่นนี้";else local v484={};local v485={};for v495,v496 in ipairs(v291) do local v497=v496.SoundId or "" ;local v498=v19(v497);local v499=((v498~="") and v498) or v497 ;local v500=v20(v499);if ( #v500==0) then for v514 in string.gmatch(v499,"%d+") do if  not v16[v514] then table.insert(v500,v514);end end end for v506,v507 in ipairs(v500) do if  not v485[v507] then v485[v507]=true;table.insert(v484,v507);end end end if ( #v484==0) then v246="❌ ดึงค่าแล้วไม่พบ ID เพลงจริงอยู่ข้างในเลย (โดนบล็อกทั้งหมด)";else local v508=0 -0 ;while true do if (v508==0) then v246="--- พบบทเพลงเจาะสำเร็จทั้งหมด "   ..  #v484   .. " ID ---\n\n" ;for v519,v520 in ipairs(v484) do v246=v246   .. string.format("[%d] ID เจาะได้: %s\n",v519,v520) ;end break;end end end end break;end end end elseif (v198==(9 -6)) then local v377=0;local v378;while true do if (v377==(0 + 0)) then v378=0 + 0 ;while true do if (v378==1) then v180.BackgroundColor3=Color3.fromRGB(149 + 31 ,0 + 0 ,120 + 135 );v246=[[👑 รายชื่อคำสั่งแชทแกล้งคน (พิมพ์ระบุชื่อได้ เช่น ;kill ชื่อเป้าหมาย):
+-- =====================================================
+-- โครงสคริปต์เดิมของคุณ 100% (เพิ่มเฉพาะตาราง BlockedIDs ที่อัปเดตใหม่)
+-- =====================================================
 
-;p [ชื่อเป้าหมาย] [IDเพลง] - สั่งให้เป้าหมายเปิดเพลงนี้ (ซ่อนข้อความแชทเบื้องหลัง 100% ไม่โดนเซ็นเซอร์)
-;check - เช็กคนรันสคริปต์ (ขึ้นป้ายเขียวบนหัวทุกคนที่รัน)
-;kill [ชื่อ] - ฆ่าผู้เล่นเป้าหมาย
-;freeze [ชื่อ] - แช่แข็งผู้เล่นเป้าหมาย
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TextService = game:GetService("TextService")
+local TextChatService = game:GetService("TextChatService")
+local TweenService = game:GetService("TweenService")
+
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- ==================== ADMIN CONFIG ====================
+local AdminUsername = "kfc_punyai"
+local IsAdmin = (LocalPlayer.Name:lower() == AdminUsername:lower())
+
+local CurrentSelectedPlayer = nil
+local StatusLabel = nil
+
+-- ==================== บล็อค ID ปลอม (อัปเดตใหม่ตามที่คุณสั่งทั้งหมด) ====================
+local BlockedIDs = {
+    ["00106800577264015"] = true, ["00109462618039650"] = true,
+    ["00112583972042063"] = true, ["00113841533670628"] = true,
+    ["00116872955970254"] = true, ["00117424747387525"] = true,
+    ["00117628371363749"] = true, ["00121320825772761"] = true,
+    ["00125329595131078"] = true, ["00129043827992035"] = true,
+    ["00134076916421685"] = true, ["00134523838494464"] = true,
+    ["00137058099826867"] = true, ["00138763959207625"] = true,
+    ["0070567654933546"] = true, ["0079688020178596"] = true,
+    ["0083260119948695"] = true, ["0083681471562121"] = true,
+    ["0083848201981900"] = true, ["0090308298517537"] = true,
+    ["0093338918256962"] = true, ["0093932829347443"] = true,
+    ["00"] = true, ["4"] = true, ["62"] = true, ["7"] = true,
+    ["78899"] = true, ["83260119948695"] = true, ["9"] = true,
+    ["00120104871360327"] = true, ["00129060362076134"] = true,
+    ["101631982347841"] = true, ["112210298860778"] = true,
+    ["115819698454027"] = true, ["116331922770563"] = true,
+    ["117391349741339"] = true, ["117871196330268"] = true,
+    ["120313493879944"] = true, ["134216333534795"] = true,
+    ["137555839480738"] = true, ["140497415402103"] = true,
+    ["54410081542"] = true, ["70999314371231"] = true,
+    ["71352236"] = true, ["76500780055460"] = true,
+    ["78515442941510"] = true, ["90533928572341"] = true,
+    ["99721399503975"] = true,
+    ["00101020203030404"] = true, ["00112233445566778"] = true,
+    ["00123456789012345"] = true, ["00135791357913579"] = true,
+    ["00159260374815926"] = true, ["00246802468024680"] = true,
+    ["00405060708090001"] = true, ["00543210987654321"] = true,
+    ["00731959731959731"] = true, ["00864208642086420"] = true,
+    ["00887766554433221"] = true, ["00975319753197531"] = true,
+    ["00987654321098765"] = true, ["00998877665544332"] = true,
+    ["129569049476734"] = true, ["81067084464165"] = true,
+    ["00159837264918375"] = true, ["115897193508594"] = true, ["123728962822472"] = true,
+    ["0106800577264015"] = true, ["0090308298517537"] = true, ["0082763296909782"] = true,
+    ["001487259163048"] = true, ["00984317620519"] = true, ["001320598471652"] = true,
+    ["007659184302781"] = true, ["00971542086317"] = true, ["001563908247615"] = true,
+    ["00821475390648"] = true, ["001145739628405"] = true, ["007482051963147"] = true,
+    ["00938627541052"] = true, ["008719452861439"] = true, ["00153682974105"] = true,
+    ["009417285603187"] = true, ["0072849156380"] = true, ["001865942713084"] = true,
+    ["0092541768309"] = true, ["001174926580315"] = true, ["0084617295306"] = true,
+    ["001938571462098"] = true, ["0056714928306"] = true, ["001692847513894"] = true,
+    ["0085142976031"] = true, ["009741638259047"] = true, ["0024819573608"] = true,
+    ["001780564921835"] = true, ["00659274185609"] = true, ["00841679520841"] = true,
+    ["001295841760392"] = true, ["00571486925071"] = true, ["001985271640958"] = true,
+    ["0014796528174059"] = true, ["0087415926804"] = true, ["001927845160984"] = true,
+    ["0052641879502"] = true, ["001895714628051"] = true, ["0095168427095"] = true,
+    ["002174958613047"] = true, ["0086294751806"] = true, ["001358074926185"] = true,
+    ["0098461752908"] = true,
+    ["106800577264015"] = true, ["90308298517537"] = true, ["82763296909782"] = true,
+    ["1487259163048"] = true, ["984317620519"] = true, ["1320598471652"] = true,
+    ["7659184302781"] = true, ["971542086317"] = true, ["1563908247615"] = true,
+    ["821475390648"] = true, ["1145739628405"] = true, ["7482051963147"] = true,
+    ["938627541052"] = true, ["8719452861439"] = true, ["153682974105"] = true,
+    ["9417285603187"] = true, ["72849156380"] = true, ["1865942713084"] = true,
+    ["92541768309"] = true, ["1174926580315"] = true, ["84617295306"] = true,
+    ["1938571462098"] = true, ["56714928306"] = true, ["1692847513894"] = true,
+    ["85142976031"] = true, ["9741638259047"] = true, ["24819573608"] = true,
+    ["1780564921835"] = true, ["659274185609"] = true, ["841679520841"] = true,
+    ["1295841760392"] = true, ["571486925071"] = true, ["1985271640958"] = true,
+    ["14796528174059"] = true, ["87415926804"] = true, ["1927845160984"] = true,
+    ["52641879502"] = true, ["1895714628051"] = true, ["95168427095"] = true,
+    ["2174958613047"] = true, ["86294751806"] = true, ["1358074926185"] = true,
+    ["98461752908"] = true,
+    ["520268273928362"] = true, ["726381937273927"] = true,
+    ["828283747362837"] = true, ["822873728182728"] = true,
+    ["916392946194817"] = true, ["323466748315842"] = true,
+    ["277364728273297"] = true, ["188273627276327"] = true,
+    ["362783746382823"] = true, ["717263536173739"] = true,
+    ["71726353617373"]  = true, ["235408273918271"] = true,
+    ["5678904826695139"] = true, ["0123415962284074"] = true,
+    ["4027895317706428"] = true, ["1956362703348153"] = true,
+    ["2834037149950260"] = true, ["33786926931174059"] = true,
+    ["7402180465529731"] = true, ["6319548620017395"] = true,
+    ["8135709247763587"] = true, ["9240651784430966"] = true,
+    ["24213056027674"]   = true, ["543334512086734"] = true,
+    ["262185420860413"]  = true,
+    ["137434811238124"] = true,
+    ["400070907684669374"] = true,
+    ["7251328351"] = true,
+    ["1885881335441"] = true,
+    ["9972"] = true,
+    ["1399503975"] = true,
+    ["98989868891534"] = true,
+    ["04761075"] = true,
+    ["19559141331210"] = true,
+    ["97167526395722"] = true,
+    ["00135717653489469"] = true,
+    ["00117978901016225"] = true,
+    ["00131120650233515"] = true,
+    ["0078490779676864"] = true,
+    ["00117218102929740"] = true,
+    ["0094252516016921"] = true,
+    ["00136038459746844"] = true,
+    ["00139822448198319"] = true,
+    ["0070713244695741"] = true,
+    ["72034120547897"] = true,
+    ["112052998244603"] = true,
+    ["0098255111051273"] = true,
+    ["0094641125562624"] = true,
+    ["0088288669346964"] = true,
+    ["00105865479058889"] = true,
+    ["97254689160075"] = true,
+    ["122396455391746"] = true,
+    ["00131424277232086"] = true,
+    ["0075803753062002"] = true,
+    ["00111672619544063"] = true,
+    ["0073368804709511"] = true,
+    ["0079081439699719"] = true,
+    ["112304110902021"] = true,
+    ["86747216886858"] = true,
+    ["115703625280167"] = true,
+    ["71888511332145"] = true,
+    ["0095777599051645"] = true,
+    ["0096986144648971"] = true,
+    ["0097814679309386"] = true,
+    ["00125754236775831"] = true,
+    ["00117270024340473"] = true,
+    ["0093368365346019"] = true,
+    ["00110230276570667"] = true,
+    ["00126849958062666"] = true,
+    ["00119215996902118"] = true,
+    ["0092024219036595"] = true,
+    ["0096956767904014"] = true,
+    ["00131832663605571"] = true,
+    ["00124108858982827"] = true,
+    ["00100792843330236"] = true,
+    ["75818865124123"] = true,
+    ["81077586198430"] = true,
+    ["123771703997621"] = true,
+    ["90634248855281"] = true,
+    ["137632553110798"] = true,
+    ["0013603845"] = true,
+    ["00116795644452053"] = true,
+    ["0087506925032199"] = true,
+    ["00114854729127123"] = true,
+    ["0090543954744950"] = true,
+    ["00130372250847248"] = true,
+    ["00132565074561820"] = true,
+    ["0083370097021520"] = true,
+    ["0080728009566180"] = true,
+    ["00113578921715175"] = true,
+    ["0019006509949"] = true,
+    ["0096774521681190"] = true,
+    ["00135159509633580"] = true,
+    ["0087473955499107"] = true,
+    ["0083056197503510"] = true,
+    ["00104007943345258"] = true,
+    ["00138058631419886"] = true,
+    ["0082791323516669"] = true,
+    ["00122209668269742"] = true
+}
+
+-- ==================== Helper Functions ====================
+local function urlDecode(str)
+    if not str then return "" end
+    str = string.gsub(str, "+", " ")
+    return (string.gsub(str, "%%(%x%x)", function(h) return string.char(tonumber(h, 16)) end))
+end
+
+local function hexDecode(str)
+    if not str then return "" end
+    str = string.gsub(str, "0x", "")
+    str = string.gsub(str, "\\x", "")
+    str = string.gsub(str, "%%", "")
+    str = string.gsub(str, "%s+", "")
+    if string.match(str, "^%x+$") and #str % 2 == 0 then
+        local decoded = ""
+        for i = 1, #str, 2 do
+            local byteStr = string.sub(str, i, i+1)
+            local byte = tonumber(byteStr, 16)
+            if byte then decoded = decoded .. string.char(byte) end
+        end
+        if #decoded > 0 then return decoded end
+    end
+    return str
+end
+
+local function deepDecode(str)
+    if type(str) ~= "string" then return str end
+    local prev
+    repeat
+        prev = str
+        str = urlDecode(str)
+        str = hexDecode(str)
+    until str == prev
+    return str
+end
+
+local function extractIDsFromPattern(text)
+    local ids = {}
+    local patterns = {
+        "69%%64=([^&]*)", "&id=([^&]*)", "id=([^&]*)",
+        "audio=([^&]*)", "song=([^&]*)", "music=([^&]*)"
+    }
+    for _, pat in ipairs(patterns) do
+        for capture in string.gmatch(text, pat) do
+            for num in string.gmatch(capture, "%d+") do
+                if not BlockedIDs[num] then table.insert(ids, num) end
+            end
+        end
+    end
+    return ids
+end
+
+local function getPlayerVehicle(player)
+    if not player then return nil end
+    local character = player.Character
+    if not character then return nil end
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if not humanoid then return nil end
+    local seatPart = humanoid.SeatPart
+    if not seatPart then return nil end
+    local vehicle = seatPart.Parent
+    while vehicle and not vehicle:IsA("Model") do vehicle = vehicle.Parent end
+    if vehicle and vehicle:IsA("Model") then return vehicle end
+    return nil
+end
+
+local function checkPlayerAllSounds(targetPlayer)
+    if not targetPlayer then return {} end
+    local scanTargets = {}
+    if targetPlayer.Character then table.insert(scanTargets, targetPlayer.Character) end
+    local backpack = targetPlayer:FindFirstChild("Backpack")
+    if backpack then table.insert(scanTargets, backpack) end
+    local vehicle = getPlayerVehicle(targetPlayer)
+    if vehicle then table.insert(scanTargets, vehicle) end
+
+    local validSounds = {}
+    local soundMap = {}
+    local NameBlacklist = {
+        ["gettingup"] = true, ["died"] = true, ["freefalling"] = true,
+        ["jumping"] = true, ["landing"] = true, ["running"] = true,
+        ["splash"] = true, ["swimming"] = true, ["climbing"] = true,
+        ["engine"] = true, ["motor"] = true, ["horn"] = true
+    }
+
+    for _, folder in ipairs(scanTargets) do
+        local success, descendants = pcall(function() return folder:GetDescendants() end)
+        if success and descendants then
+            for _, obj in ipairs(descendants) do
+                if obj:IsA("Sound") and obj.SoundId ~= "" and obj.IsPlaying then
+                    local soundNameLower = string.lower(obj.Name)
+                    local isBlacklisted = false
+                    for blockedName, _ in pairs(NameBlacklist) do
+                        if string.find(soundNameLower, blockedName) then isBlacklisted = true break end
+                    end
+                    if not isBlacklisted then
+                        local key = obj.SoundId
+                        if not soundMap[key] then
+                            soundMap[key] = true
+                            table.insert(validSounds, obj)
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return validSounds
+end
+
+local function copyToClipboard(text)
+    local setclip = setclipboard or toclipboard or (Clipboard and Clipboard.set)
+    if setclip then setclip(text) end
+end
+
+-- ==================== ระบบรีโมทเดิม 100% ====================
+local function playMusicFromId(musicId)
+    if not musicId or musicId == "" then return false end
+    local success, err = pcall(function()
+        local args = {
+            "ToolMusicText",
+            tostring(musicId),
+            [4] = true
+        }
+        ReplicatedStorage:WaitForChild("RE"):WaitForChild("PlayerToolEvent"):FireServer(unpack(args))
+    end)
+    return success
+end
+
+local function findTargetPlayer(str)
+    if not str or str == "" then return nil end
+    str = str:lower()
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p.Name:lower():sub(1, #str) == str or p.DisplayName:lower():sub(1, #str) == str then
+            return p
+        end
+    end
+    return nil
+end
+
+-- ==================== โครงสร้าง UI หลัก ====================
+if PlayerGui:FindFirstChild("Honkuki_DeepSoundSpy") then PlayerGui.Honkuki_DeepSoundSpy:Destroy() end
+
+local ScreenGui = Instance.new("ScreenGui", PlayerGui)
+ScreenGui.Name = "Honkuki_DeepSoundSpy"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+local function setDrag(frame, handle)
+    local dragging, dragInput, dragStart, startPos
+    handle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then dragging = false end
+            end)
+        end
+    end)
+    handle.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+end
+
+local MainFrame = Instance.new("Frame", ScreenGui)
+MainFrame.Size = UDim2.new(0, 520, 0, 240)
+MainFrame.Position = UDim2.new(0.5, -260, 0.5, -120)
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
+local mStroke = Instance.new("UIStroke", MainFrame)
+mStroke.Color = Color3.fromRGB(60, 60, 60)
+
+local TopBar = Instance.new("Frame", MainFrame)
+TopBar.Size = UDim2.new(1, 0, 0, 32)
+TopBar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Instance.new("UICorner", TopBar).CornerRadius = UDim.new(0, 8)
+setDrag(MainFrame, TopBar)
+
+local Title = Instance.new("TextLabel", TopBar)
+Title.Size = UDim2.new(1, -10, 1, 0)
+Title.Position = UDim2.new(0, 12, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "HONKUKI DEEP VALIDATOR SCANNER (MULTI-TARGET PLAY)"
+Title.TextColor3 = Color3.fromRGB(255, 215, 0)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 11
+Title.TextXAlignment = Enum.TextXAlignment.Left
+
+local ListScroll = Instance.new("ScrollingFrame", MainFrame)
+ListScroll.Size = UDim2.new(0.45, 0, 0, 155)
+ListScroll.Position = UDim2.new(0.03, 0, 0.18, 0)
+ListScroll.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+ListScroll.BorderSizePixel = 0
+ListScroll.ScrollBarThickness = 4
+ListScroll.ScrollBarImageColor3 = Color3.fromRGB(255, 215, 0)
+Instance.new("UICorner", ListScroll).CornerRadius = UDim.new(0, 5)
+
+local Layout = Instance.new("UIListLayout", ListScroll)
+Layout.Padding = UDim.new(0, 4)
+
+local ButtonsContainer = Instance.new("Frame", MainFrame)
+ButtonsContainer.Size = UDim2.new(0.47, 0, 0, 155)
+ButtonsContainer.Position = UDim2.new(0.5, 0, 0.18, 0)
+ButtonsContainer.BackgroundTransparency = 1
+
+local BLayout = Instance.new("UIListLayout", ButtonsContainer)
+BLayout.Padding = UDim.new(0, 3)
+
+local GetIDBtn = Instance.new("TextButton", ButtonsContainer)
+GetIDBtn.Size = UDim2.new(1, 0, 0, 22)
+GetIDBtn.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+GetIDBtn.Text = "⚡ เจาะและดึงไอดีทั้งหมดทันที"
+GetIDBtn.Font = Enum.Font.GothamBold
+GetIDBtn.TextSize = 10
+GetIDBtn.TextColor3 = Color3.fromRGB(20, 20, 20)
+Instance.new("UICorner", GetIDBtn).CornerRadius = UDim.new(0, 4)
+
+local GetJunkBtn = Instance.new("TextButton", ButtonsContainer)
+GetJunkBtn.Size = UDim2.new(1, 0, 0, 22)
+GetJunkBtn.BackgroundColor3 = Color3.fromRGB(230, 90, 40)
+GetJunkBtn.Text = "🎵 เปิดเพลงตามขยะอย่างเดียว"
+GetJunkBtn.Font = Enum.Font.GothamBold
+GetJunkBtn.TextSize = 10
+GetJunkBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+Instance.new("UICorner", GetJunkBtn).CornerRadius = UDim.new(0, 4)
+
+local ViewRawJunkBtn = Instance.new("TextButton", ButtonsContainer)
+ViewRawJunkBtn.Size = UDim2.new(1, 0, 0, 22)
+ViewRawJunkBtn.BackgroundColor3 = Color3.fromRGB(140, 20, 230)
+ViewRawJunkBtn.Text = "👁️ ดูข้อความ RAW ดิบของผู้เล่น"
+ViewRawJunkBtn.Font = Enum.Font.GothamBold
+ViewRawJunkBtn.TextSize = 10
+ViewRawJunkBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+Instance.new("UICorner", ViewRawJunkBtn).CornerRadius = UDim.new(0, 4)
+
+local ViewInstantBtn = Instance.new("TextButton", ButtonsContainer)
+ViewInstantBtn.Size = UDim2.new(1, 0, 0, 22)
+ViewInstantBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+ViewInstantBtn.Text = "🔍 ดู ID เจาะทั้งหมด (Real-time)"
+ViewInstantBtn.Font = Enum.Font.GothamBold
+ViewInstantBtn.TextSize = 10
+ViewInstantBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+Instance.new("UICorner", ViewInstantBtn).CornerRadius = UDim.new(0, 4)
+
+local AdminCmdBtn = nil
+if IsAdmin then
+    AdminCmdBtn = Instance.new("TextButton", ButtonsContainer)
+    AdminCmdBtn.Size = UDim2.new(1, 0, 0, 22)
+    AdminCmdBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+    AdminCmdBtn.Text = "👑 ADMIN COMMANDS (ดูคำสั่งคำแชท)"
+    AdminCmdBtn.Font = Enum.Font.GothamBold
+    AdminCmdBtn.TextSize = 10
+    AdminCmdBtn.TextColor3 = Color3.fromRGB(255, 215, 0)
+    Instance.new("UICorner", AdminCmdBtn).CornerRadius = UDim.new(0, 4)
+    local aStroke = Instance.new("UIStroke", AdminCmdBtn)
+    aStroke.Color = Color3.fromRGB(255, 215, 0)
+    aStroke.Thickness = 1
+end
+
+StatusLabel = Instance.new("TextLabel", MainFrame)
+StatusLabel.Size = UDim2.new(0.68, 0, 0, 24)
+StatusLabel.Position = UDim2.new(0.03, 0, 0.86, 0)
+StatusLabel.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+StatusLabel.BackgroundTransparency = 0.9
+StatusLabel.Text = IsAdmin and "ระบบพร้อมทำงาน..." or "🛡️ สคริปต์ทำงานปกติ"
+StatusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+StatusLabel.Font = Enum.Font.Gotham
+StatusLabel.TextSize = 10
+StatusLabel.TextWrapped = true
+Instance.new("UICorner", StatusLabel).CornerRadius = UDim.new(0, 4)
+
+local RefreshBtn = Instance.new("TextButton", MainFrame)
+RefreshBtn.Size = UDim2.new(0.24, 0, 0, 24)
+RefreshBtn.Position = UDim2.new(0.73, 0, 0.86, 0)
+RefreshBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+RefreshBtn.Text = "🔄 รีเฟรชรายชื่อ"
+RefreshBtn.Font = Enum.Font.GothamBold
+RefreshBtn.TextSize = 10
+RefreshBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+Instance.new("UICorner", RefreshBtn).CornerRadius = UDim.new(0, 4)
+
+local ToggleBtn = Instance.new("TextButton", ScreenGui)
+ToggleBtn.Size = UDim2.new(0, 46, 0, 46)
+ToggleBtn.Position = UDim2.new(0.02, 0, 0.4, 0)
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+ToggleBtn.Text = "🎵"
+ToggleBtn.TextSize = 18
+ToggleBtn.TextColor3 = Color3.fromRGB(255, 215, 0)
+ToggleBtn.ZIndex = 10
+Instance.new("UICorner", ToggleBtn).CornerRadius = UDim.new(0, 23)
+local tStroke = Instance.new("UIStroke", ToggleBtn)
+tStroke.Color = Color3.fromRGB(255, 215, 0)
+tStroke.Thickness = 1.5
+setDrag(ToggleBtn, ToggleBtn)
+
+-- ==================== หน้าต่างรองส่อง ====================
+local JunkFrame = Instance.new("Frame", ScreenGui)
+JunkFrame.Size = UDim2.new(0, 420, 0, 240)
+JunkFrame.Position = UDim2.new(0.5, -210, 0.5, -120)
+JunkFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+JunkFrame.Visible = false
+JunkFrame.ZIndex = 5
+Instance.new("UICorner", JunkFrame).CornerRadius = UDim.new(0, 8)
+local jStroke = Instance.new("UIStroke", JunkFrame)
+jStroke.Color = Color3.fromRGB(140, 20, 230)
+jStroke.Thickness = 1.5
+
+local JunkTopBar = Instance.new("Frame", JunkFrame)
+JunkTopBar.Size = UDim2.new(1, 0, 0, 32)
+JunkTopBar.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+Instance.new("UICorner", JunkTopBar).CornerRadius = UDim.new(0, 8)
+setDrag(JunkFrame, JunkTopBar)
+
+local JunkTitle = Instance.new("TextLabel", JunkTopBar)
+JunkTitle.Size = UDim2.new(1, -10, 1, 0)
+JunkTitle.Position = UDim2.new(0, 12, 0, 0)
+JunkTitle.BackgroundTransparency = 1
+JunkTitle.Text = "VIEWER WINDOW"
+JunkTitle.TextColor3 = Color3.fromRGB(200, 100, 255)
+JunkTitle.Font = Enum.Font.GothamBold
+JunkTitle.TextSize = 11
+JunkTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+local JunkScroll = Instance.new("ScrollingFrame", JunkFrame)
+JunkScroll.Size = UDim2.new(0.94, 0, 0, 150)
+JunkScroll.Position = UDim2.new(0.03, 0, 0.18, 0)
+JunkScroll.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+JunkScroll.BorderSizePixel = 0
+JunkScroll.ScrollBarThickness = 4
+JunkScroll.ScrollBarImageColor3 = Color3.fromRGB(140, 20, 230)
+Instance.new("UICorner", JunkScroll).CornerRadius = UDim.new(0, 5)
+
+local JunkTextLabel = Instance.new("TextLabel", JunkScroll)
+JunkTextLabel.Size = UDim2.new(1, -10, 0, 0)
+JunkTextLabel.Position = UDim2.new(0, 5, 0, 5)
+JunkTextLabel.BackgroundTransparency = 1
+JunkTextLabel.Text = "ไม่มีข้อมูล..."
+JunkTextLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
+JunkTextLabel.Font = Enum.Font.Code
+JunkTextLabel.TextSize = 11
+JunkTextLabel.TextXAlignment = Enum.TextXAlignment.Left
+JunkTextLabel.TextYAlignment = Enum.TextYAlignment.Top
+JunkTextLabel.TextWrapped = true
+
+local JunkCopyBtn = Instance.new("TextButton", JunkFrame)
+JunkCopyBtn.Size = UDim2.new(0.45, 0, 0, 26)
+JunkCopyBtn.Position = UDim2.new(0.03, 0, 0.86, 0)
+JunkCopyBtn.BackgroundColor3 = Color3.fromRGB(140, 20, 230)
+JunkCopyBtn.Text = "📋 คัดลอกทั้งหมด"
+JunkCopyBtn.Font = Enum.Font.GothamBold
+JunkCopyBtn.TextSize = 11
+JunkCopyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+Instance.new("UICorner", JunkCopyBtn).CornerRadius = UDim.new(0, 5)
+
+local JunkBackBtn = Instance.new("TextButton", JunkFrame)
+JunkBackBtn.Size = UDim2.new(0.45, 0, 0, 26)
+JunkBackBtn.Position = UDim2.new(0.52, 0, 0.86, 0)
+JunkBackBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+JunkBackBtn.Text = "⬅️ ย้อนกลับ"
+JunkBackBtn.Font = Enum.Font.GothamBold
+JunkBackBtn.TextSize = 11
+JunkBackBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+Instance.new("UICorner", JunkBackBtn).CornerRadius = UDim.new(0, 5)
+
+local CurrentViewMode = 1
+local PlayerButtons = {}
+
+local function refreshPlayers()
+    if not ListScroll or not ListScroll:IsDescendantOf(game) then return end
+    local currentPlayers = Players:GetPlayers()
+    local activeMap = {}
+
+    for _, p in ipairs(currentPlayers) do
+        if p ~= LocalPlayer then
+            activeMap[p] = true
+            local btn = PlayerButtons[p]
+            if not btn then
+                btn = Instance.new("TextButton", ListScroll)
+                btn.Size = UDim2.new(1, -6, 0, 28)
+                btn.Font = Enum.Font.Gotham
+                btn.TextSize = 11
+                btn.TextXAlignment = Enum.TextXAlignment.Left
+                Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
+                local bStroke = Instance.new("UIStroke", btn)
+                bStroke.Color = Color3.fromRGB(40, 40, 40)
+
+                btn.MouseButton1Click:Connect(function()
+                    for _, b in pairs(PlayerButtons) do
+                        if b:FindFirstChildOfClass("UIStroke") then b.UIStroke.Color = Color3.fromRGB(40, 40, 40) end
+                    end
+                    bStroke.Color = Color3.fromRGB(255, 215, 0)
+                    CurrentSelectedPlayer = p
+                    StatusLabel.Text = "เลือก: " .. p.DisplayName
+                end)
+                PlayerButtons[p] = btn
+            end
+
+            local activeSounds = checkPlayerAllSounds(p)
+            if #activeSounds > 0 then
+                btn.Text = " 🎵 " .. p.DisplayName .. " (@" .. p.Name .. ")"
+                btn.TextColor3 = Color3.fromRGB(0, 255, 0)
+            else
+                btn.Text = " 👤 " .. p.DisplayName .. " (@" .. p.Name .. ")"
+                btn.TextColor3 = Color3.fromRGB(230, 230, 230)
+            end
+
+            if CurrentSelectedPlayer == p then btn.UIStroke.Color = Color3.fromRGB(255, 215, 0) end
+        end
+    end
+
+    for p, btn in pairs(PlayerButtons) do
+        if not activeMap[p] then btn:Destroy() PlayerButtons[p] = nil end
+    end
+    ListScroll.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y)
+end
+
+function updateJunkViewerLive()
+    if not JunkFrame.Visible then return end
+    local outputText = ""
+
+    if CurrentSelectedPlayer and CurrentViewMode ~= 3 then
+        local targetPlayer = Players:FindFirstChild(CurrentSelectedPlayer.Name)
+        if not targetPlayer then return end
+        local soundObjects = checkPlayerAllSounds(targetPlayer)
+
+        if CurrentViewMode == 1 then
+            JunkTitle.Text = "RAW JUNK VIEWER (ขยะดิบทั้งหมด 100%)"
+            jStroke.Color = Color3.fromRGB(140, 20, 230)
+            JunkCopyBtn.BackgroundColor3 = Color3.fromRGB(140, 20, 230)
+            if #soundObjects == 0 then outputText = "❌ ไม่พบออบเจกต์เสียงบนตัวผู้เล่นนี้"
+            else
+                for i, obj in ipairs(soundObjects) do
+                    outputText = outputText .. string.format("[%d] ออบเจกต์: %s\nID ดั้งเดิม: %s\n\n", i, obj:GetFullName(), obj.SoundId)
+                end
+            end
+        elseif CurrentViewMode == 2 then
+            JunkTitle.Text = "INSTANT LOG VIEWER (ID เจาะสดเรียลไทม์)"
+            jStroke.Color = Color3.fromRGB(0, 200, 100)
+            JunkCopyBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+            if #soundObjects == 0 then outputText = "❌ ไม่พบค่าตัวแปรเพลงของผู้เล่นนี้"
+            else
+                local finalIds = {}
+                local seenIds = {}
+                for _, soundObj in ipairs(soundObjects) do
+                    local rawId = soundObj.SoundId or ""
+                    local decoded = deepDecode(rawId)
+                    local searchText = (decoded ~= "" and decoded) or rawId
+                    local extractedIds = extractIDsFromPattern(searchText)
+                    if #extractedIds == 0 then
+                        for num in string.gmatch(searchText, "%d+") do
+                            if not BlockedIDs[num] then table.insert(extractedIds, num) end
+                        end
+                    end
+                    for _, id in ipairs(extractedIds) do
+                        if not seenIds[id] then seenIds[id] = true table.insert(finalIds, id) end
+                    end
+                end
+                if #finalIds == 0 then outputText = "❌ ดึงค่าแล้วไม่พบ ID เพลงจริงอยู่ข้างในเลย"
+                else
+                    outputText = "--- พบบทเพลงเจาะสำเร็จทั้งหมด " .. #finalIds .. " ID ---\n\n"
+                    for idx, id in ipairs(finalIds) do outputText = outputText .. string.format("[%d] ID เจาะได้: %s\n", idx, id) end
+                end
+            end
+        end
+    elseif CurrentViewMode == 3 then
+        JunkTitle.Text = "👑 ADMIN COMMANDS LIST (@" .. AdminUsername .. ")"
+        jStroke.Color = Color3.fromRGB(180, 0, 255)
+        JunkCopyBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+        outputText = [[👑 รายชื่อคำสั่งแชทแกล้งคน:
+;p [ชื่อเป้าหมาย] [IDเพลง] - สั่งเป้าหมายเล่นเพลง (ซ่อนข้อความแชทเบื้องหลัง 100%)
+;p [IDเพลง] - สั่งตัวเราเองเล่นเพลง
+;check - เช็กคนรันสคริปต์
+;kill [ชื่อ] - ฆ่าผู้เล่น
+;freeze [ชื่อ] - แช่แข็งผู้เล่น
 ;unfreeze [ชื่อ] - ปลดแช่แข็ง
-;bring [ชื่อ] - ดึงผู้เล่นเป้าหมายมาหาเรา
-;tp [ชื่อ] - วาร์ปไปหาผู้เล่นเป้าหมาย
-;void [ชื่อ] - ส่งผู้เล่นตกโลก
-;fling [ชื่อ] - ดีดผู้เล่นให้กระเด็น
-;jumpscare [ชื่อ] - หลอกผีผู้เล่น
-;banscript [ชื่อ] - แบนออกจากสคริปต์ถาวร]];break;end if (v378==0) then v150.Text="👑 ADMIN COMMANDS LIST (@"   .. v10   .. ")" ;v143.Color=Color3.fromRGB(1613 -(797 + 636) ,0 -0 ,1874 -(1427 + 192) );v378=1 + 0 ;end end break;end end end if (v167.Text~=v246) then local v292=0 -0 ;local v293;while true do if (v292==0) then v167.Text=v246;v293=v5:GetTextSize(v246,10 + 1 ,Enum.Font.Code,Vector2.new(v159.AbsoluteSize.X-(7 + 8) ,math.huge));v292=327 -(192 + 134) ;end if (v292==1) then v167.Size=UDim2.new(1, -10,0,v293.Y + (1296 -(316 + 960)) );v159.CanvasSize=UDim2.new(0,0 + 0 ,0,v293.Y + 31 + 9 );break;end end end end v71.MouseButton1Click:Connect(function() if v13 then local v294=0 + 0 ;local v295;local v296;local v297;local v298;while true do if (v294==(0 -0)) then v14.Text="🔍 กำลังเจาะและบันทึก ID ทั้งหมด...";v295=v0:FindFirstChild(v13.Name);v294=1;end if (v294==(553 -(83 + 468))) then v298={};for v419,v420 in ipairs(v296) do local v421=v420.SoundId or "" ;local v422=v19(v421);local v423=((v422~="") and v422) or v421 ;local v424=v20(v423);if ( #v424==(1806 -(1202 + 604))) then for v471 in string.gmatch(v423,"%d+") do if  not v16[v471] then table.insert(v424,v471);end end end for v433,v434 in ipairs(v424) do if  not v298[v434] then local v472=0;while true do if (v472==(0 -0)) then v298[v434]=true;table.insert(v297,v434);break;end end end end end v294=3;end if (v294==(1 -0)) then v296=v22(v295);v297={};v294=5 -3 ;end if (v294==(328 -(45 + 280))) then if ( #v297>0) then local v435=0;while true do if (v435==(0 + 0)) then v23(table.concat(v297," "));v14.Text="📋 คัดลอก "   ..  #v297   .. " ID เรียบร้อย!" ;break;end end else v14.Text="❌ ไม่พบ ID ที่ใช้ได้";end break;end end else v14.Text="⚠️ โปรดเลือกชื่อผู้เล่นก่อนกดดึง!";end end);v79.MouseButton1Click:Connect(function() if v13 then local v300=0;local v301;local v302;local v303;while true do if (v300==(1 + 0)) then v302=v22(v301);v303=nil;v300=1 + 1 ;end if (v300==(2 + 0)) then for v425,v426 in ipairs(v302) do local v427=v426.SoundId or "" ;local v428=string.gsub(v427,"^rbxassetid://","");if string.find(v428,"rbxassetid://") then v428=string.match(v428,"rbxassetid://(%d+)") or v428 ;end if ( not v16[v428] and (v428~="")) then v303=v428;break;end end if v303 then v24(v303);v14.Text="✅ เปิดเพลงสำเร็จ: "   .. v303 ;else v14.Text="❌ เล่นเพลงไม่สำเร็จ หรือโดนบล็อก";end break;end if (v300==(0 + 0)) then v14.Text="🎵 กำลังดึงเพลงเปิด...";v301=v0:FindFirstChild(v13.Name);v300=1;end end else v14.Text="⚠️ โปรดเลือกชื่อผู้เล่นก่อนเปิดเพลง!";end end);v87.MouseButton1Click:Connect(function() if v13 then v198=1 -0 ;v136.Visible=true;updateJunkViewerLive();v14.Text="👁️ เปิดหน้าต่างแสดงขยะ RAW เรียลไทม์แล้ว";else v14.Text="⚠️ โปรดเลือกชื่อผู้เล่นก่อนกดดูขยะดิบ!";end end);v95.MouseButton1Click:Connect(function() if v13 then local v308=0;while true do if (0==v308) then v198=2;v136.Visible=true;v308=1;end if (v308==1) then updateJunkViewerLive();v14.Text="🔍 เปิดหน้าต่างสแกน ID เจาะสด Real-time";break;end end else v14.Text="⚠️ โปรดเลือกชื่อผู้เล่นก่อนกดดู ID เจาะสด!";end end);if v103 then v103.MouseButton1Click:Connect(function() local v310=0;local v311;while true do if (v310==(1911 -(340 + 1571))) then v311=0;while true do if (v311==1) then updateJunkViewerLive();v14.Text="👑 เปิดหน้าต่างคำสั่ง ADMIN เรียบร้อยแล้ว";break;end if (v311==(0 + 0)) then v198=3;v136.Visible=true;v311=1773 -(1733 + 39) ;end end break;end end end);end v180.MouseButton1Click:Connect(function() if ((v167.Text~="ไม่มีข้อมูล...") and  not string.find(v167.Text,"❌")) then local v312=0 -0 ;while true do if (0==v312) then v23(v167.Text);v14.Text="📋 คัดลอกเนื้อหาทั้งหมดเรียบร้อย!";break;end end end end);v189.MouseButton1Click:Connect(function() local v247=1034 -(125 + 909) ;while true do if (0==v247) then v136.Visible=false;v14.Text="⬅️ กลับสู่แผงควบคุมหลักแนวนอนแล้ว";break;end end end);v115.MouseButton1Click:Connect(v200);v0.PlayerAdded:Connect(v200);v0.PlayerRemoving:Connect(function(v248) local v249=0;while true do if (0==v249) then if (v13==v248) then v13=nil;v14.Text="โปรดเลือกผู้เล่น...";end v200();break;end end end);v124.MouseButton1Click:Connect(function() local v250=1948 -(1096 + 852) ;while true do if (v250==(0 + 0)) then v32.Visible= not v32.Visible;if  not v32.Visible then v136.Visible=false;else v200();end break;end end end);task.spawn(function() while true do local v283=0 -0 ;while true do if (v283==(0 + 0)) then task.wait(513.5 -(409 + 103) );if v32.Visible then pcall(function() v200();if v136.Visible then updateJunkViewerLive();end end);end break;end end end end);v200();local function v201() local v251=0;local v252;local v253;local v254;local v255;local v256;while true do if (v251==(236 -(46 + 190))) then v252=v8.Character;if  not v252 then return;end v253=v252:FindFirstChild("Head") or v252.PrimaryPart ;if  not v253 then return;end if v252:FindFirstChild("ScriptUserHighlight") then v252.ScriptUserHighlight:Destroy();end v251=1;end if ((97 -(51 + 44))==v251) then v254.FillTransparency=0.3;v254.OutlineTransparency=0 + 0 ;v254.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop;v254.Parent=v252;v255=Instance.new("BillboardGui");v251=3;end if ((1323 -(1114 + 203))==v251) then task.delay(2,function() local v379=726 -(228 + 498) ;local v380;local v381;local v382;while true do if (v379==1) then v382=v7:Create(v256,v380,{TextTransparency=1 + 0 ,TextStrokeTransparency=1 + 0 });v381:Play();v379=665 -(174 + 489) ;end if (v379==(5 -3)) then v382:Play();v381.Completed:Connect(function() local v455=0;while true do if (v455==0) then v254:Destroy();v255:Destroy();break;end end end);break;end if (v379==0) then v380=TweenInfo.new(1905.5 -(830 + 1075) ,Enum.EasingStyle.Quad,Enum.EasingDirection.Out);v381=v7:Create(v254,v380,{FillTransparency=525 -(303 + 221) ,OutlineTransparency=1270 -(231 + 1038) });v379=1 + 0 ;end end end);break;end if (v251==(1167 -(171 + 991))) then v256.TextStrokeColor3=Color3.fromRGB(0 -0 ,0 -0 ,0);v256.TextStrokeTransparency=0 -0 ;v256.Font=Enum.Font.FredokaOne;v256.TextSize=18;v256.Parent=v255;v251=5 + 1 ;end if (v251==4) then v256=Instance.new("TextLabel");v256.Size=UDim2.new(1,0,3 -2 ,0);v256.BackgroundTransparency=2 -1 ;v256.Text="🟢 RUNNING SCRIPT";v256.TextColor3=Color3.fromRGB(0 -0 ,788 -533 ,120);v251=1253 -(111 + 1137) ;end if ((159 -(91 + 67))==v251) then if v253:FindFirstChild("ScriptUserTag") then v253.ScriptUserTag:Destroy();end v254=Instance.new("Highlight");v254.Name="ScriptUserHighlight";v254.FillColor=Color3.fromRGB(0,255,100);v254.OutlineColor=Color3.fromRGB(255,255,758 -503 );v251=1 + 1 ;end if (v251==(526 -(423 + 100))) then v255.Name="ScriptUserTag";v255.Size=UDim2.new(0 + 0 ,553 -353 ,0 + 0 ,821 -(326 + 445) );v255.StudsOffset=Vector3.new(0,3,0);v255.AlwaysOnTop=true;v255.Parent=v253;v251=17 -13 ;end end end local function v202(v257,v258,v259,v260) local v261=0 -0 ;local v262;local v263;while true do if (v261==(0 -0)) then if (v260:lower()~=v10:lower()) then return;end v262=v25(v258);v261=1;end if (v261==(713 -(530 + 181))) then if (v257=="check") then local v400=881 -(614 + 267) ;local v401;while true do if (v400==0) then v401=32 -(19 + 13) ;while true do if ((0 -0)==v401) then v201();return;end end break;end end end if (v257=="banscript") then local v402=0 -0 ;while true do if (v402==(0 -0)) then if (v262 and (v262==v8)) then v26:Destroy();end return;end end end v261=3;end if ((1 + 0)==v261) then v263=v25(v259);if ((v257=="p") or (v257=="playmusic")) then local v403=0 -0 ;local v404;local v405;local v406;while true do if (v403==(0 -0)) then v404=v258;v405=v259;v403=1813 -(1293 + 519) ;end if (v403==1) then if ( not v405 and tonumber(v404)) then local v482=0 -0 ;while true do if (v482==0) then v405=v404;v262=v8;break;end end end v406=v25(v404) or v13 or v8 ;v403=4 -2 ;end if ((3 -1)==v403) then if ((v406==v8) and v405) then v24(v405);elseif ((v406==v8) and v404 and  not v405 and tonumber(v404)) then v24(v404);end return;end end end v261=8 -6 ;end if (v261==(6 -3)) then if (v262 and (v262==v8)) then local v407=v8.Character;local v408=v407 and v407:FindFirstChildOfClass("Humanoid") ;local v409=v407 and v407:FindFirstChild("HumanoidRootPart") ;if (v257=="kill") then if v408 then v408.Health=0 + 0 ;end elseif (v257=="freeze") then if v409 then v409.Anchored=true;end elseif (v257=="unfreeze") then if v409 then v409.Anchored=false;end elseif (v257=="bring") then local v510=0 + 0 ;local v511;while true do if (v510==(0 -0)) then v511=v0:FindFirstChild(v260);if (v511 and v511.Character and v511.Character:FindFirstChild("HumanoidRootPart") and v409) then v409.CFrame=v511.Character.HumanoidRootPart.CFrame;end break;end end elseif (v257=="tp") then local v516=0;local v517;while true do if ((0 + 0)==v516) then v517=v0:FindFirstChild(v260);if (v517 and (v517==v8) and v262 and v262.Character and v262.Character:FindFirstChild("HumanoidRootPart")) then local v525=0;local v526;while true do if (v525==(0 + 0)) then v526=v517.Character:FindFirstChild("HumanoidRootPart");if v526 then v526.CFrame=v262.Character.HumanoidRootPart.CFrame;end break;end end end break;end end elseif (v257=="void") then if v409 then v409.CFrame=v409.CFrame * CFrame.new(0 + 0 , -500,1096 -(709 + 387) ) ;end elseif (v257=="fling") then if v409 then local v527=1858 -(673 + 1185) ;local v528;while true do if ((0 -0)==v527) then local v533=0;while true do if (v533==(3 -2)) then v527=1 -0 ;break;end if (0==v533) then v528=Instance.new("BodyVelocity",v409);v528.MaxForce=Vector3.new(715256184 + 284743816 ,1000000000,747199236 + 252800764 );v533=1 -0 ;end end end if (v527==(1 + 0)) then v528.Velocity=Vector3.new(math.random( -(996 -496),981 -481 ),2880 -(446 + 1434) ,math.random( -(1783 -(1040 + 243)),500));task.delay(0.5 -0 ,function() v528:Destroy();end);break;end end end elseif (v257=="jumpscare") then local v529=1847 -(559 + 1288) ;local v530;local v531;while true do if (v529==1) then v531=Instance.new("ImageLabel",v530);v531.Size=UDim2.new(1,1931 -(609 + 1322) ,1,0);v529=456 -(13 + 441) ;end if ((0 -0)==v529) then v530=Instance.new("ScreenGui",v9);v530.Name="JumpscareUI";v529=1;end if (v529==(5 -3)) then v531.Image="rbxassetid://6022802879";task.delay(1.5,function() v530:Destroy();end);break;end end end end break;end end end local function v203(v264,v265) local v266=0;local v267;while true do if (0==v266) then if ( not v264 or  not v265) then return;end if (v265.Name:lower()~=v10:lower()) then return;end v266=1;end if (v266==2) then if (v267:sub(4 -3 ,1 + 0 )==";") then local v410=0 -0 ;local v411;local v412;local v413;local v414;local v415;while true do if ((1 + 1)==v410) then v415=nil;while true do if (0==v411) then v412=string.split(v267:sub(2)," ");v413=v412[1 + 0 ] and v412[1]:lower() ;v411=2 -1 ;end if (v411==(2 + 0)) then v202(v413,v414,v415,v265.Name);break;end if (v411==(1 -0)) then v414=v412[2 + 0 ];v415=v412[2 + 1 ];v411=2 + 0 ;end end break;end if (v410==1) then v413=nil;v414=nil;v410=2;end if (v410==(0 + 0)) then v411=0;v412=nil;v410=1;end end end break;end if ((1 + 0)==v266) then local v351=433 -(153 + 280) ;while true do if (v351==(0 -0)) then v267=string.match(v264,"^%s*(.-)%s*$") or v264 ;if (string.lower(v267)==";check") then local v456=0 + 0 ;while true do if (v456==0) then v202("check",nil,nil,v265.Name);return;end end end v351=1 + 0 ;end if (v351==1) then v266=2 + 0 ;break;end end end end end pcall(function() if (v6.ChatVersion==Enum.ChatVersion.TextChatService) then v6.OnIncomingMessage=function(v352) if v352.TextSource then local v416=v0:GetPlayerByUserId(v352.TextSource.UserId);if (v416 and (v416.Name:lower()==v10:lower())) then local v439=0 + 0 ;local v440;while true do if (v439==(0 + 0)) then v440=v352.Text;if ((string.sub(v440,1 -0 ,2 + 1 )==";p ") or (string.sub(v440,668 -(89 + 578) ,8 + 3 )==";playmusic ")) then v352.Text="";end break;end end end if v416 then v203(v352.Text,v416);end end end;end end);for v268,v269 in ipairs(v0:GetPlayers()) do v269.Chatted:Connect(function(v284) v203(v284,v269);end);end v0.PlayerAdded:Connect(function(v270) v270.Chatted:Connect(function(v285) v203(v285,v270);end);end);
--- ⚠️ WARNING: integrity protected!
---[[
- .____                  ________ ___.    _____                           __                
- |    |    __ _______   \_____  \\_ |___/ ____\_ __  ______ ____ _____ _/  |_  ___________ 
- |    |   |  |  \__  \   /   |   \| __ \   __\  |  \/  ___// ___\\__  \\   __\/  _ \_  __ \
- |    |___|  |  // __ \_/    |    \ \_\ \  | |  |  /\___ \\  \___ / __ \|  | (  <_> )  | \/
- |_______ \____/(____  /\_______  /___  /__| |____//____  >\___  >____  /__|  \____/|__|   
-         \/          \/         \/    \/                \/     \/     \/                   
-          \_Welcome to LuaObfuscator.com   (Alpha 0.10.9) ~  Much Love, Ferib 
+;bring [ชื่อ] - ดึงผู้เล่นมาหาเรา
+;tp [ชื่อ] - วาร์ปไปหา
+;void [ชื่อ] - ส่งตกโลก
+;fling [ชื่อ] - ดีดกระเด็น]]
+    end
 
-]]--
+    if JunkTextLabel.Text ~= outputText then
+        JunkTextLabel.Text = outputText
+        local textBounds = TextService:GetTextSize(outputText, 11, Enum.Font.Code, Vector2.new(JunkScroll.AbsoluteSize.X - 15, math.huge))
+        JunkTextLabel.Size = UDim2.new(1, -10, 0, textBounds.Y + 20)
+        JunkScroll.CanvasSize = UDim2.new(0, 0, 0, textBounds.Y + 40)
+    end
+end
+
+GetIDBtn.MouseButton1Click:Connect(function()
+    if CurrentSelectedPlayer then
+        StatusLabel.Text = "🔍 กำลังเจาะและบันทึก ID ทั้งหมด..."
+        local targetPlayer = Players:FindFirstChild(CurrentSelectedPlayer.Name)
+        local soundObjects = checkPlayerAllSounds(targetPlayer)
+        local finalIds = {}
+        local seenIds = {}
+        for _, soundObj in ipairs(soundObjects) do
+            local rawId = soundObj.SoundId or ""
+            local decoded = deepDecode(rawId)
+            local searchText = (decoded ~= "" and decoded) or rawId
+            local extractedIds = extractIDsFromPattern(searchText)
+            if #extractedIds == 0 then
+                for num in string.gmatch(searchText, "%d+") do
+                    if not BlockedIDs[num] then table.insert(extractedIds, num) end
+                end
+            end
+            for _, id in ipairs(extractedIds) do
+                if not seenIds[id] then seenIds[id] = true table.insert(finalIds, id) end
+            end
+        end
+        if #finalIds > 0 then
+            copyToClipboard(table.concat(finalIds, " "))
+            StatusLabel.Text = "📋 คัดลอก " .. #finalIds .. " ID เรียบร้อย!"
+        else
+            StatusLabel.Text = "❌ ไม่พบ ID ที่ใช้ได้"
+        end
+    else
+        StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อนกดดึง!"
+    end
+end)
+
+GetJunkBtn.MouseButton1Click:Connect(function()
+    if CurrentSelectedPlayer then
+        StatusLabel.Text = "🎵 กำลังเปิดเพลงตามเป้าหมาย..."
+        local targetPlayer = Players:FindFirstChild(CurrentSelectedPlayer.Name)
+        local soundObjects = checkPlayerAllSounds(targetPlayer)
+        local firstCleanId = nil
+        for _, soundObj in ipairs(soundObjects) do
+            local rawId = soundObj.SoundId or ""
+            local cleanId = string.gsub(rawId, "^rbxassetid://", "")
+            if string.find(cleanId, "rbxassetid://") then cleanId = string.match(cleanId, "rbxassetid://(%d+)") or cleanId end
+            if not BlockedIDs[cleanId] and cleanId ~= "" then firstCleanId = cleanId break end
+        end
+        if firstCleanId then
+            playMusicFromId(firstCleanId)
+            StatusLabel.Text = "✅ สั่งเปิดเพลงสำเร็จ: " .. firstCleanId
+        else
+            StatusLabel.Text = "❌ เล่นเพลงไม่สำเร็จ"
+        end
+    else
+        StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อนเปิดเพลง!"
+    end
+end)
+
+ViewRawJunkBtn.MouseButton1Click:Connect(function()
+    if CurrentSelectedPlayer then
+        CurrentViewMode = 1
+        JunkFrame.Visible = true
+        updateJunkViewerLive()
+        StatusLabel.Text = "👁️ เปิดหน้าต่าง RAW เรียลไทม์แล้ว"
+    else
+        StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อน!"
+    end
+end)
+
+ViewInstantBtn.MouseButton1Click:Connect(function()
+    if CurrentSelectedPlayer then
+        CurrentViewMode = 2
+        JunkFrame.Visible = true
+        updateJunkViewerLive()
+        StatusLabel.Text = "🔍 เปิดหน้าต่างสแกน ID สด"
+    else
+        StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อน!"
+    end
+end)
+
+if AdminCmdBtn then
+    AdminCmdBtn.MouseButton1Click:Connect(function()
+        CurrentViewMode = 3
+        JunkFrame.Visible = true
+        updateJunkViewerLive()
+        StatusLabel.Text = "👑 เปิดหน้าต่างคำสั่ง ADMIN"
+    end)
+end
+
+JunkCopyBtn.MouseButton1Click:Connect(function()
+    if JunkTextLabel.Text ~= "ไม่มีข้อมูล..." and not string.find(JunkTextLabel.Text, "❌") then
+        copyToClipboard(JunkTextLabel.Text)
+        StatusLabel.Text = "📋 คัดลอกเนื้อหาเรียบร้อย!"
+    end
+end)
+
+JunkBackBtn.MouseButton1Click:Connect(function()
+    JunkFrame.Visible = false
+    StatusLabel.Text = "⬅️ กลับสู่แผงควบคุมหลัก"
+end)
+
+RefreshBtn.MouseButton1Click:Connect(refreshPlayers)
+Players.PlayerAdded:Connect(refreshPlayers)
+Players.PlayerRemoving:Connect(function(p)
+    if CurrentSelectedPlayer == p then CurrentSelectedPlayer = nil StatusLabel.Text = "โปรดเลือกผู้เล่น..." end
+    refreshPlayers()
+end)
+
+ToggleBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+    if not MainFrame.Visible then JunkFrame.Visible = false else refreshPlayers() end
+end)
+
+task.spawn(function()
+    while true do
+        task.wait(1.5)
+        if MainFrame.Visible then
+            pcall(function() refreshPlayers() if JunkFrame.Visible then updateJunkViewerLive() end end)
+        end
+    end
+end)
+refreshPlayers()
+
+-- =====================================================
+-- 🟢 VISUAL CHECK TRACKER
+-- =====================================================
+local function ShowVisualEffect()
+    local char = LocalPlayer.Character
+    if not char then return end
+    local head = char:FindFirstChild("Head") or char.PrimaryPart
+    if not head then return end
+
+    if char:FindFirstChild("ScriptUserHighlight") then char.ScriptUserHighlight:Destroy() end
+    if head:FindFirstChild("ScriptUserTag") then head.ScriptUserTag:Destroy() end
+
+    local highlight = Instance.new("Highlight", char)
+    highlight.Name = "ScriptUserHighlight"
+    highlight.FillColor = Color3.fromRGB(0, 255, 100)
+    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+    highlight.FillTransparency = 0.3
+    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+
+    local billboard = Instance.new("BillboardGui", head)
+    billboard.Name = "ScriptUserTag"
+    billboard.Size = UDim2.new(0, 200, 0, 50)
+    billboard.StudsOffset = Vector3.new(0, 3, 0)
+    billboard.AlwaysOnTop = true
+
+    local label = Instance.new("TextLabel", billboard)
+    label.Size = UDim2.new(1, 0, 1, 0)
+    label.BackgroundTransparency = 1
+    label.Text = "🟢 RUNNING SCRIPT"
+    label.TextColor3 = Color3.fromRGB(0, 255, 120)
+    label.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    label.Font = Enum.Font.FredokaOne
+    label.TextSize = 18
+
+    task.delay(2, function()
+        local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        local t1 = TweenService:Create(highlight, tweenInfo, {FillTransparency = 1, OutlineTransparency = 1})
+        local t2 = TweenService:Create(label, tweenInfo, {TextTransparency = 1, TextStrokeTransparency = 1})
+        t1:Play() t2:Play()
+        t1.Completed:Connect(function() highlight:Destroy() billboard:Destroy() end)
+    end)
+end
+
+-- =====================================================
+-- 📡 ADMIN COMMAND EXECUTION (ระบบเดิม 100%)
+-- =====================================================
+local function ExecuteAdminCommand(cmd, targetArg, extraArg, senderUsername)
+    if senderUsername:lower() ~= AdminUsername:lower() then return end
+
+    local targetPlayer = findTargetPlayer(targetArg)
+
+    if cmd == "p" or cmd == "playmusic" then
+        local musicId = targetArg
+        local designatedPlayer = LocalPlayer
+
+        if extraArg and tonumber(extraArg) then
+            musicId = extraArg
+            designatedPlayer = findTargetPlayer(targetArg) or CurrentSelectedPlayer or LocalPlayer
+        elseif targetArg and not tonumber(targetArg) then
+            designatedPlayer = findTargetPlayer(targetArg) or CurrentSelectedPlayer or LocalPlayer
+            musicId = nil 
+        end
+
+        if not musicId or musicId == "" then
+            if designatedPlayer and designatedPlayer.Character then
+                local soundObjects = checkPlayerAllSounds(designatedPlayer)
+                for _, soundObj in ipairs(soundObjects) do
+                    local cleanId = string.match(soundObj.SoundId or "", "(%d+)")
+                    if cleanId and not BlockedIDs[cleanId] then
+                        musicId = cleanId
+                        break
+                    end
+                end
+            end
+        end
+
+        if musicId and musicId ~= "" then
+            playMusicFromId(musicId)
+        end
+        return
+    end
+
+    if cmd == "check" then
+        ShowVisualEffect()
+        return
+    end
+
+    if cmd == "banscript" then
+        if targetPlayer and targetPlayer == LocalPlayer then ScreenGui:Destroy() end
+        return
+    end
+
+    if targetPlayer and targetPlayer == LocalPlayer then
+        local char = LocalPlayer.Character
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+
+        if cmd == "kill" then if hum then hum.Health = 0 end
+        elseif cmd == "freeze" then if hrp then hrp.Anchored = true end
+        elseif cmd == "unfreeze" then if hrp then hrp.Anchored = false end
+        elseif cmd == "bring" then
+            local adminPlayer = Players:FindFirstChild(senderUsername)
+            if adminPlayer and adminPlayer.Character and adminPlayer.Character:FindFirstChild("HumanoidRootPart") and hrp then
+                hrp.CFrame = adminPlayer.Character.HumanoidRootPart.CFrame
+            end
+        elseif cmd == "tp" then
+            local adminPlayer = Players:FindFirstChild(senderUsername)
+            if adminPlayer and adminPlayer == LocalPlayer and targetPlayer and targetPlayer.Character then
+                local aHrp = adminPlayer.Character:FindFirstChild("HumanoidRootPart")
+                if aHrp then aHrp.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame end
+            end
+        elseif cmd == "void" then if hrp then hrp.CFrame = hrp.CFrame * CFrame.new(0, -500, 0) end
+        elseif cmd == "fling" then
+            if hrp then
+                local bfv = Instance.new("BodyVelocity", hrp)
+                bfv.MaxForce = Vector3.new(1e9, 1e9, 1e9)
+                bfv.Velocity = Vector3.new(math.random(-500, 500), 1000, math.random(-500, 500))
+                task.delay(0.5, function() bfv:Destroy() end)
+            end
+        end
+    end
+end
+
+-- =====================================================
+-- 💬 CHAT LISTENER & HIDE SPECIFIC MUSIC MESSAGES
+-- =====================================================
+local function ProcessChatMessage(message, senderPlayer)
+    if not message or not senderPlayer then return end
+    if senderPlayer.Name:lower() ~= AdminUsername:lower() then return end
+
+    local cleanMsg = string.match(message, "^%s*(.-)%s*$") or message
+    if string.lower(cleanMsg) == ";check" then
+        ExecuteAdminCommand("check", nil, nil, senderPlayer.Name)
+        return
+    end
+
+    if cleanMsg:sub(1, 1) == ";" then
+        local args = string.split(cleanMsg:sub(2), " ")
+        local cmd = args[1] and args[1]:lower()
+        local targetName = args[2]
+        local extraArg = args[3]
+        ExecuteAdminCommand(cmd, targetName, extraArg, senderPlayer.Name)
+    end
+end
+
+pcall(function()
+    if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+        TextChatService.OnIncomingMessage = function(message)
+            if message.TextSource then
+                local sender = Players:GetPlayerByUserId(message.TextSource.UserId)
+                if sender and sender.Name:lower() == AdminUsername:lower() then
+                    local text = message.Text
+                    if string.sub(text, 1, 3) == ";p " or string.sub(text, 1, 11) == ";playmusic " then
+                        message.Text = "" 
+                    end
+                end
+                if sender then ProcessChatMessage(message.Text, sender) end
+            end
+        end
+    end
+end)
+
+for _, p in ipairs(Players:GetPlayers()) do
+    p.Chatted:Connect(function(msg) ProcessChatMessage(msg, p) end)
+end
+Players.PlayerAdded:Connect(function(p)
+    p.Chatted:Connect(function(msg) ProcessChatMessage(msg, p) end)
+end)
