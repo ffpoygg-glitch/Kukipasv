@@ -1,6 +1,6 @@
 -- =====================================================
--- HONKUKI DEEP VALIDATOR SCANNER (MOBILE-HORIZONTAL ULTRA-LIGHT)
--- [เวอร์ชันอัปเดต: เพิ่มการเจาะค้นหาตัวแปร 9 d = เรียบร้อยแล้ว]
+-- HONKUKI DEEP VALIDATOR SCANNER & ADMIN CONTROL
+-- [ADMIN: @kfc_punyai ONLY]
 -- =====================================================
 
 local Players = game:GetService("Players")
@@ -9,9 +9,15 @@ local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local MarketplaceService = game:GetService("MarketplaceService")
 local TextService = game:GetService("TextService")
+local TextChatService = game:GetService("TextChatService")
 
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- ==================== ADMIN CONFIG ====================
+local AdminUsername = "kfc_punyai"
+local IsAdmin = (LocalPlayer.Name:lower() == AdminUsername:lower())
+local BannedFromScript = {}
 
 local CurrentSelectedPlayer = nil
 local StatusLabel = nil
@@ -95,156 +101,7 @@ local BlockedIDs = {
     ["7402180465529731"] = true, ["6319548620017395"] = true,
     ["8135709247763587"] = true, ["9240651784430966"] = true,
     ["24213056027674"]   = true, ["543334512086734"] = true,
-    ["262185420860413"]  = true,
-    ["137434811238124"] = true,
-    ["400070907684669374"] = true,
-    ["7251328351"] = true,
-    ["1885881335441"] = true,
-    ["9972"] = true,
-    ["1399503975"] = true,
-    ["98989868891534"] = true,
-    ["04761075"] = true,
-    ["19559141331210"] = true,
-    ["97167526395722"] = true,
-    ["00135717653489469"] = true,
-    ["00117978901016225"] = true,
-    ["00131120650233515"] = true,
-    ["0078490779676864"] = true,
-    ["00117218102929740"] = true,
-    ["0094252516016921"] = true,
-    ["00136038459746844"] = true,
-    ["00139822448198319"] = true,
-    ["0070713244695741"] = true,
-    ["72034120547897"] = true,
-    ["112052998244603"] = true,
-    ["0098255111051273"] = true,
-    ["0094641125562624"] = true,
-    ["0088288669346964"] = true,
-    ["00105865479058889"] = true,
-    ["97254689160075"] = true,
-    ["122396455391746"] = true,
-    ["00131424277232086"] = true,
-    ["0075803753062002"] = true,
-    ["00111672619544063"] = true,
-    ["0073368804709511"] = true,
-    ["0079081439699719"] = true,
-    ["112304110902021"] = true,
-    ["86747216886858"] = true,
-    ["115703625280167"] = true,
-    ["71888511332145"] = true,
-    ["0095777599051645"] = true,
-    ["0096986144648971"] = true,
-    ["0097814679309386"] = true,
-    ["00125754236775831"] = true,
-    ["00117270024340473"] = true,
-    ["0093368365346019"] = true,
-    ["00110230276570667"] = true,
-    ["00126849958062666"] = true,
-    ["00119215996902118"] = true,
-    ["0092024219036595"] = true,
-    ["0096956767904014"] = true,
-    ["00131832663605571"] = true,
-    ["00124108858982827"] = true,
-    ["00100792843330236"] = true,
-    ["75818865124123"] = true,
-    ["81077586198430"] = true,
-    ["123771703997621"] = true,
-    ["90634248855281"] = true,
-    ["137632553110798"] = true,
-    ["0013603845"] = true,
-    ["00116795644452053"] = true,
-    ["0087506925032199"] = true,
-    ["00114854729127123"] = true,
-    ["0090543954744950"] = true,
-    ["00130372250847248"] = true,
-    ["00132565074561820"] = true,
-    ["0083370097021520"] = true,
-    ["0080728009566180"] = true,
-    ["00113578921715175"] = true,
-    ["0019006509949"] = true,
-    ["0096774521681190"] = true,
-    ["00135159509633580"] = true,
-    ["0087473955499107"] = true,
-    ["0083056197503510"] = true,
-    ["00104007943345258"] = true,
-    ["00138058631419886"] = true,
-    ["0082791323516669"] = true,
-    ["00122209668269742"] = true,
-    ["0083260119448675"] = true,
-    ["00129462618639650"] = true,
-    ["0083932827347443"] = true,
-    ["00100800577164015"] = true,
-    ["0090309298517536"] = true,
-    ["00117628672363749"] = true,
-    ["0091848271981900"] = true,
-    ["00134476916426685"] = true,
-    ["00196872951970254"] = true,
-    ["00129643829992035"] = true,
-    ["00107058019826867"] = true,
-    ["00121320815776761"] = true,
-    ["0097681411562121"] = true,
-    ["00104523837494454"] = true,
-    ["00108763959187625"] = true,
-    ["00103341533670628"] = true,
-    ["0073567657933546"] = true,
-    ["00117484747381529"] = true,
-    ["00102583982042068"] = true,
-    ["0089689020278596"] = true,
-    ["00126329595231978"] = true,
-    ["0090338113256962"] = true,
-    ["0087260439948695"] = true,
-    ["00103462658039651"] = true,
-    ["0093931829347443"] = true,
-    ["00106800817264017"] = true,
-    ["0090307298519537"] = true,
-    ["00101424747387525"] = true,
-    ["00116872915970654"] = true,
-    ["00129943827692035"] = true,
-    ["00167058097826867"] = true,
-    ["00121120825772761"] = true,
-    ["0083641471512121"] = true,
-    ["00135523831494464"] = true,
-    ["00138763959507620"] = true,
-    ["00111841033670628"] = true,
-    ["0083260109948697"] = true,
-    ["00106462618019650"] = true,
-    ["0093934829347743"] = true,
-    ["00116800577264015"] = true,
-    ["00137055199826817"] = true,
-    ["0097681471562121"] = true,
-    ["00112583912041063"] = true,
-    ["00107700577264015"] = true,
-    ["00137058099823667"] = true,
-    ["0093932829347413"] = true,
-    ["00137058099821867"] = true,
-    ["00112583971042063"] = true,
-    ["0079688120178796"] = true,
-    ["00125329590131098"] = true,
-    ["0093338928256062"] = true,
-    ["0083262119978695"] = true,
-    ["00149462658039650"] = true,
-    ["0093932829346493"] = true,
-    ["00106800517254015"] = true,
-    ["0090308998517538"] = true,
-    ["00117668371763749"] = true,
-    ["0083858201911900"] = true,
-    ["00135076816421685"] = true,
-    ["00116872955971254"] = true,
-    ["00129043827992055"] = true,
-    ["00137258099826867"] = true,
-    ["00124320825772766"] = true,
-    ["0083681471562123"] = true,
-    ["00134523838494454"] = true,
-    ["00138763959207624"] = true,
-    ["00112841533670628"] = true,
-    ["00107810577264015"] = true,
-    ["0093932829347443"] = true,
-    ["00106815577264015"] = true,
-    ["0093932829347441"] = true,
-    ["00106990577264015"] = true,
-    ["00106800777264315"] = true,
-    ["3000000000000000"] = true,
-    ["0010781057726401593932829347443"] = true,
+    ["262185420860413"]  = true
 }
 
 -- ==================== Helper Functions ====================
@@ -292,7 +149,6 @@ local function extractIDsFromPattern(text)
         "69%%64=([^&]*)", "&id=([^&]*)", "id=([^&]*)",
         "audio=([^&]*)", "song=([^&]*)", "music=([^&]*)",
         "%%69%%64=([^&]*)", "&%%69%%64=([^&]*)",
-        -- [เพิ่มแพทเทิร์นเจาะตัวแปร 9 d = ตามที่สั่ง]
         "9%s*d%s*=%s*([^&]*)", "9d=([^&]*)"
     }
     for _, pat in ipairs(patterns) do
@@ -404,6 +260,17 @@ local function playMusicFromId(musicId)
     return false
 end
 
+local function findTargetPlayer(str)
+    if not str or str == "" then return nil end
+    str = str:lower()
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p.Name:lower():sub(1, #str) == str or p.DisplayName:lower():sub(1, #str) == str then
+            return p
+        end
+    end
+    return nil
+end
+
 -- ==================== โครงสร้าง UI หลัก ====================
 if PlayerGui:FindFirstChild("Honkuki_DeepSoundSpy") then PlayerGui.Honkuki_DeepSoundSpy:Destroy() end
 
@@ -485,7 +352,7 @@ local BLayout = Instance.new("UIListLayout", ButtonsContainer)
 BLayout.Padding = UDim.new(0, 3)
 
 local GetIDBtn = Instance.new("TextButton", ButtonsContainer)
-GetIDBtn.Size = UDim2.new(1, 0, 0, 24)
+GetIDBtn.Size = UDim2.new(1, 0, 0, 22)
 GetIDBtn.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
 GetIDBtn.Text = "⚡ เจาะและดึงไอดีทั้งหมดทันที"
 GetIDBtn.Font = Enum.Font.GothamBold
@@ -494,7 +361,7 @@ GetIDBtn.TextColor3 = Color3.fromRGB(20, 20, 20)
 Instance.new("UICorner", GetIDBtn).CornerRadius = UDim.new(0, 4)
 
 local GetJunkBtn = Instance.new("TextButton", ButtonsContainer)
-GetJunkBtn.Size = UDim2.new(1, 0, 0, 24)
+GetJunkBtn.Size = UDim2.new(1, 0, 0, 22)
 GetJunkBtn.BackgroundColor3 = Color3.fromRGB(230, 90, 40)
 GetJunkBtn.Text = "🎵 เปิดเพลงตามขยะอย่างเดียว"
 GetJunkBtn.Font = Enum.Font.GothamBold
@@ -503,7 +370,7 @@ GetJunkBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 Instance.new("UICorner", GetJunkBtn).CornerRadius = UDim.new(0, 4)
 
 local ViewRawJunkBtn = Instance.new("TextButton", ButtonsContainer)
-ViewRawJunkBtn.Size = UDim2.new(1, 0, 0, 24)
+ViewRawJunkBtn.Size = UDim2.new(1, 0, 0, 22)
 ViewRawJunkBtn.BackgroundColor3 = Color3.fromRGB(140, 20, 230)
 ViewRawJunkBtn.Text = "👁️ ดูข้อความ RAW ดิบของผู้เล่น"
 ViewRawJunkBtn.Font = Enum.Font.GothamBold
@@ -512,13 +379,29 @@ ViewRawJunkBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 Instance.new("UICorner", ViewRawJunkBtn).CornerRadius = UDim.new(0, 4)
 
 local ViewInstantBtn = Instance.new("TextButton", ButtonsContainer)
-ViewInstantBtn.Size = UDim2.new(1, 0, 0, 24)
+ViewInstantBtn.Size = UDim2.new(1, 0, 0, 22)
 ViewInstantBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
 ViewInstantBtn.Text = "🔍 ดู ID เจาะทั้งหมด (Real-time)"
 ViewInstantBtn.Font = Enum.Font.GothamBold
 ViewInstantBtn.TextSize = 10
 ViewInstantBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 Instance.new("UICorner", ViewInstantBtn).CornerRadius = UDim.new(0, 4)
+
+-- ==================== 👑 ADMIN BUTTON (เฉพาะ @kfc_punyai เท่านั้นที่จะเห็น) ====================
+local AdminCmdBtn = nil
+if IsAdmin then
+    AdminCmdBtn = Instance.new("TextButton", ButtonsContainer)
+    AdminCmdBtn.Size = UDim2.new(1, 0, 0, 22)
+    AdminCmdBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+    AdminCmdBtn.Text = "👑 ADMIN COMMANDS (ดูคำสั่งคำแชท)"
+    AdminCmdBtn.Font = Enum.Font.GothamBold
+    AdminCmdBtn.TextSize = 10
+    AdminCmdBtn.TextColor3 = Color3.fromRGB(255, 215, 0)
+    Instance.new("UICorner", AdminCmdBtn).CornerRadius = UDim.new(0, 4)
+    local aStroke = Instance.new("UIStroke", AdminCmdBtn)
+    aStroke.Color = Color3.fromRGB(255, 215, 0)
+    aStroke.Thickness = 1
+end
 
 StatusLabel = Instance.new("TextLabel", MainFrame)
 StatusLabel.Size = UDim2.new(0.68, 0, 0, 24)
@@ -556,7 +439,7 @@ tStroke.Color = Color3.fromRGB(255, 215, 0)
 tStroke.Thickness = 1.5
 setDrag(ToggleBtn, ToggleBtn)
 
--- ==================== หน้าต่างรองส่อง Real-time ====================
+-- ==================== หน้าต่างรองส่อง Real-time / ADMIN POPUP ====================
 local JunkFrame = Instance.new("Frame", ScreenGui)
 JunkFrame.Size = UDim2.new(0, 420, 0, 240)
 JunkFrame.Position = UDim2.new(0.5, -210, 0.5, -120)
@@ -692,7 +575,7 @@ function updateJunkViewerLive()
 
     local outputText = ""
 
-    if CurrentSelectedPlayer then
+    if CurrentSelectedPlayer and CurrentViewMode ~= 3 then
         local targetPlayer = Players:FindFirstChild(CurrentSelectedPlayer.Name)
         if not targetPlayer then return end
         
@@ -750,6 +633,21 @@ function updateJunkViewerLive()
                 end
             end
         end
+    elseif CurrentViewMode == 3 then
+        JunkTitle.Text = "👑 ADMIN COMMANDS LIST (@" .. AdminUsername .. ")"
+        jStroke.Color = Color3.fromRGB(180, 0, 255)
+        JunkCopyBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+        outputText = [[👑 รายชื่อคำสั่งแชทแกล้งคน (พิมพ์ในช่องแชทได้เลย คนอื่นจะไม่เห็นข้อความ):
+
+;kill [ชื่อ] - ฆ่าผู้เล่น
+;freeze [ชื่อ] - แช่แข็งผู้เล่น
+;unfreeze [ชื่อ] - ปลดแช่แข็ง
+;bring [ชื่อ] - ดึงผู้เล่นมาหาเรา
+;tp [ชื่อ] - วาร์ปไปหาผู้เล่น
+;void [ชื่อ] - ส่งผู้เล่นลงใต้แมพ (ตกโลก)
+;fling [ชื่อ] - ดีดผู้เล่นให้กระเด็น
+;jumpscare [ชื่อ] - หลอกผีผู้เล่น
+;banscript [ชื่อ] - แบนออกจากสคริปต์ถาวร (ลบ UI ทิ้ง)]]
     end
 
     if JunkTextLabel.Text ~= outputText then
@@ -844,6 +742,15 @@ ViewInstantBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+if AdminCmdBtn then
+    AdminCmdBtn.MouseButton1Click:Connect(function()
+        CurrentViewMode = 3
+        JunkFrame.Visible = true
+        updateJunkViewerLive()
+        StatusLabel.Text = "👑 เปิดหน้าต่างคำสั่ง ADMIN เรียบร้อยแล้ว"
+    end)
+end
+
 JunkCopyBtn.MouseButton1Click:Connect(function()
     if JunkTextLabel.Text ~= "ไม่มีข้อมูล..." and not string.find(JunkTextLabel.Text, "❌") then
         copyToClipboard(JunkTextLabel.Text)
@@ -891,3 +798,114 @@ task.spawn(function()
 end)
 
 refreshPlayers()
+
+-- =====================================================
+-- ⚙️ ADMIN COMMAND EXECUTION & CHAT INTERCEPTOR
+-- =====================================================
+
+local function ExecuteAdminCommand(cmd, targetArg)
+    local targetPlayer = findTargetPlayer(targetArg)
+    
+    if cmd == "banscript" then
+        if targetPlayer then
+            BannedFromScript[targetPlayer.UserId] = true
+            BannedFromScript[targetPlayer.Name:lower()] = true
+            StatusLabel.Text = "🚫 แบน " .. targetPlayer.Name .. " ออกจากสคริปต์เรียบร้อย!"
+        end
+        return
+    end
+
+    if targetPlayer and targetPlayer == LocalPlayer then
+        local char = LocalPlayer.Character
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+
+        if cmd == "kill" then
+            if hum then hum.Health = 0 end
+        elseif cmd == "freeze" then
+            if hrp then hrp.Anchored = true end
+        elseif cmd == "unfreeze" then
+            if hrp then hrp.Anchored = false end
+        elseif cmd == "bring" then
+            local adminPlayer = Players:FindFirstChild(AdminUsername)
+            if adminPlayer and adminPlayer.Character and adminPlayer.Character:FindFirstChild("HumanoidRootPart") and hrp then
+                hrp.CFrame = adminPlayer.Character.HumanoidRootPart.CFrame
+            end
+        elseif cmd == "tp" then
+            -- สั่งให้ Admin วาร์ปไปหา Target
+        elseif cmd == "void" then
+            if hrp then hrp.CFrame = hrp.CFrame * CFrame.new(0, -500, 0) end
+        elseif cmd == "fling" then
+            if hrp then
+                local bfv = Instance.new("BodyVelocity", hrp)
+                bfv.MaxForce = Vector3.new(1e9, 1e9, 1e9)
+                bfv.Velocity = Vector3.new(math.random(-500, 500), 1000, math.random(-500, 500))
+                task.delay(0.5, function() bfv:Destroy() end)
+            end
+        elseif cmd == "jumpscare" then
+            local jScreen = Instance.new("ScreenGui", PlayerGui)
+            jScreen.Name = "JumpscareUI"
+            local img = Instance.new("ImageLabel", jScreen)
+            img.Size = UDim2.new(1, 0, 1, 0)
+            img.Image = "rbxassetid://6022802879" -- รูปภาพ Jumpscare
+            task.delay(1.5, function() jScreen:Destroy() end)
+        end
+    end
+end
+
+-- ดักจับคำสั่งในแชท (Chat Interceptor)
+local function ProcessChatMessage(message, senderPlayer)
+    if message:sub(1, 1) == ";" then
+        local args = string.split(message:sub(2), " ")
+        local cmd = args[1] and args[1]:lower()
+        local targetName = args[2]
+
+        -- เช็คการแบนสคริปต์
+        if cmd == "banscript" and senderPlayer.Name:lower() == AdminUsername:lower() and targetName then
+            local targetPlayer = findTargetPlayer(targetName)
+            if targetPlayer and targetPlayer == LocalPlayer then
+                ScreenGui:Destroy()
+                return true
+            end
+        end
+
+        if senderPlayer.Name:lower() == AdminUsername:lower() then
+            ExecuteAdminCommand(cmd, targetName)
+            return true -- คืนค่า true เพื่อบล็อกไม่ให้แชทเด้งลงเกม
+        end
+    end
+    return false
+end
+
+-- Hook เข้ากับระบบ Chat ของ Roblox (รองรับทั้ง Chat เก่าและ TextChatService ใหม่)
+pcall(function()
+    if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+        TextChatService.OnIncomingMessage = function(message)
+            if message.TextSource then
+                local sender = Players:GetPlayerByUserId(message.TextSource.UserId)
+                if sender and ProcessChatMessage(message.Text, sender) and sender == LocalPlayer then
+                    message.Text = "" -- ซ่อนแชทไม่ให้โชว์ที่จอเรา
+                end
+            end
+        end
+    end
+end)
+
+-- Hook Chat ระบบเก่า (Legacy Chat System)
+pcall(function()
+    for _, p in ipairs(Players:GetPlayers()) do
+        p.Chatted:Connect(function(msg)
+            ProcessChatMessage(msg, p)
+        end)
+    end
+    Players.PlayerAdded:Connect(function(p)
+        p.Chatted:Connect(function(msg)
+            ProcessChatMessage(msg, p)
+        end)
+    end)
+end)
+
+-- เช็คว่าตัวเราเองโดนแบนอยู่ก่อนรันไหม
+if BannedFromScript[LocalPlayer.UserId] or BannedFromScript[LocalPlayer.Name:lower()] then
+    ScreenGui:Destroy()
+end
