@@ -1,25 +1,25 @@
 -- =====================================================
--- โครงสคริปต์เดิมของคุณ 100% (เพิ่มเฉพาะตาราง BlockedIDs ที่อัปเดตใหม่)
+-- HONKUKI DEEP VALIDATOR SCANNER (MOBILE-HORIZONTAL ULTRA-LIGHT)
+-- [เวอร์ชันอัปเดต: เพิ่มการเจาะค้นหาตัวแปร 9 d = เรียบร้อยแล้ว]
 -- =====================================================
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
+local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local MarketplaceService = game:GetService("MarketplaceService")
 local TextService = game:GetService("TextService")
-local TextChatService = game:GetService("TextChatService")
-local TweenService = game:GetService("TweenService")
 
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
--- ==================== ADMIN CONFIG ====================
-local AdminUsername = "kfc_punyai"
-local IsAdmin = (LocalPlayer.Name:lower() == AdminUsername:lower())
-
 local CurrentSelectedPlayer = nil
 local StatusLabel = nil
 
--- ==================== บล็อค ID ปลอม (อัปเดตใหม่ตามที่คุณสั่งทั้งหมด) ====================
+-- Cache ข้อมูลเพื่อลดภาระการโหลด
+local AssetCache = {}
+
+-- ==================== บล็อค ID ปลอม (อัปเดตใหม่ล่าสุด) ====================
 local BlockedIDs = {
     ["00106800577264015"] = true, ["00109462618039650"] = true,
     ["00112583972042063"] = true, ["00113841533670628"] = true,
@@ -169,7 +169,7 @@ local BlockedIDs = {
     ["00104007943345258"] = true,
     ["00138058631419886"] = true,
     ["0082791323516669"] = true,
-    ["00122209668269742"] = true
+    ["00122209668269742"] = true,
 }
 
 -- ==================== Helper Functions ====================
@@ -185,12 +185,15 @@ local function hexDecode(str)
     str = string.gsub(str, "\\x", "")
     str = string.gsub(str, "%%", "")
     str = string.gsub(str, "%s+", "")
+    
     if string.match(str, "^%x+$") and #str % 2 == 0 then
         local decoded = ""
         for i = 1, #str, 2 do
             local byteStr = string.sub(str, i, i+1)
             local byte = tonumber(byteStr, 16)
-            if byte then decoded = decoded .. string.char(byte) end
+            if byte then 
+                decoded = decoded .. string.char(byte) 
+            end
         end
         if #decoded > 0 then return decoded end
     end
@@ -212,12 +215,17 @@ local function extractIDsFromPattern(text)
     local ids = {}
     local patterns = {
         "69%%64=([^&]*)", "&id=([^&]*)", "id=([^&]*)",
-        "audio=([^&]*)", "song=([^&]*)", "music=([^&]*)"
+        "audio=([^&]*)", "song=([^&]*)", "music=([^&]*)",
+        "%%69%%64=([^&]*)", "&%%69%%64=([^&]*)",
+        -- [เพิ่มแพทเทิร์นเจาะตัวแปร 9 d = ตามที่สั่ง]
+        "9%s*d%s*=%s*([^&]*)", "9d=([^&]*)"
     }
     for _, pat in ipairs(patterns) do
         for capture in string.gmatch(text, pat) do
             for num in string.gmatch(capture, "%d+") do
-                if not BlockedIDs[num] then table.insert(ids, num) end
+                if not BlockedIDs[num] then
+                    table.insert(ids, num)
+                end
             end
         end
     end
@@ -233,27 +241,40 @@ local function getPlayerVehicle(player)
     local seatPart = humanoid.SeatPart
     if not seatPart then return nil end
     local vehicle = seatPart.Parent
-    while vehicle and not vehicle:IsA("Model") do vehicle = vehicle.Parent end
-    if vehicle and vehicle:IsA("Model") then return vehicle end
+    while vehicle and not vehicle:IsA("Model") do
+        vehicle = vehicle.Parent
+    end
+    if vehicle and vehicle:IsA("Model") then
+        return vehicle
+    end
     return nil
 end
 
 local function checkPlayerAllSounds(targetPlayer)
     if not targetPlayer then return {} end
+
     local scanTargets = {}
     if targetPlayer.Character then table.insert(scanTargets, targetPlayer.Character) end
     local backpack = targetPlayer:FindFirstChild("Backpack")
     if backpack then table.insert(scanTargets, backpack) end
+    
     local vehicle = getPlayerVehicle(targetPlayer)
     if vehicle then table.insert(scanTargets, vehicle) end
 
     local validSounds = {}
     local soundMap = {}
+
     local NameBlacklist = {
         ["gettingup"] = true, ["died"] = true, ["freefalling"] = true,
         ["jumping"] = true, ["landing"] = true, ["running"] = true,
         ["splash"] = true, ["swimming"] = true, ["climbing"] = true,
-        ["engine"] = true, ["motor"] = true, ["horn"] = true
+        ["skateboard"] = true, ["skate"] = true, ["board"] = true,
+        ["car"] = true, ["vehicle"] = true, ["bike"] = true,
+        ["scooter"] = true, ["bicycle"] = true, ["motorcycle"] = true,
+        ["engine"] = true, ["motor"] = true, ["horn"] = true,
+        ["tire"] = true, ["wheel"] = true, ["brake"] = true,
+        ["squeak"] = true, ["driving"] = true, ["road"] = true,
+        ["crash"] = true, ["impact"] = true, ["bump"] = true
     }
 
     for _, folder in ipairs(scanTargets) do
@@ -264,7 +285,10 @@ local function checkPlayerAllSounds(targetPlayer)
                     local soundNameLower = string.lower(obj.Name)
                     local isBlacklisted = false
                     for blockedName, _ in pairs(NameBlacklist) do
-                        if string.find(soundNameLower, blockedName) then isBlacklisted = true break end
+                        if string.find(soundNameLower, blockedName) then
+                            isBlacklisted = true
+                            break
+                        end
                     end
                     if not isBlacklisted then
                         local key = obj.SoundId
@@ -285,29 +309,24 @@ local function copyToClipboard(text)
     if setclip then setclip(text) end
 end
 
--- ==================== ระบบรีโมทเดิม 100% ====================
 local function playMusicFromId(musicId)
     if not musicId or musicId == "" then return false end
-    local success, err = pcall(function()
-        local args = {
-            "ToolMusicText",
-            tostring(musicId),
-            [4] = true
-        }
-        ReplicatedStorage:WaitForChild("RE"):WaitForChild("PlayerToolEvent"):FireServer(unpack(args))
-    end)
-    return success
-end
-
-local function findTargetPlayer(str)
-    if not str or str == "" then return nil end
-    str = str:lower()
-    for _, p in ipairs(Players:GetPlayers()) do
-        if p.Name:lower():sub(1, #str) == str or p.DisplayName:lower():sub(1, #str) == str then
-            return p
+    local re = ReplicatedStorage:FindFirstChild("RE")
+    if re then
+        local success1, success2 = false, false
+        local event1 = re:FindFirstChild("PlayerToolEvent")
+        if event1 then
+            local args1 = { "ToolMusicText", musicId, "", [4] = true }
+            success1 = pcall(function() event1:FireServer(unpack(args1)) end)
         end
+        local event2 = re:FindFirstChild("1NoMoto1rVehicle1s")
+        if event2 then
+            local args2 = { "ToolMusicText", musicId, "", [4] = true }
+            success2 = pcall(function() event2:FireServer(unpack(args2)) end)
+        end
+        return success1 or success2
     end
-    return nil
+    return false
 end
 
 -- ==================== โครงสร้าง UI หลัก ====================
@@ -326,7 +345,9 @@ local function setDrag(frame, handle)
             dragStart = input.Position
             startPos = frame.Position
             input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then dragging = false end
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
             end)
         end
     end)
@@ -347,6 +368,7 @@ local MainFrame = Instance.new("Frame", ScreenGui)
 MainFrame.Size = UDim2.new(0, 520, 0, 240)
 MainFrame.Position = UDim2.new(0.5, -260, 0.5, -120)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+MainFrame.ZIndex = 1
 Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
 local mStroke = Instance.new("UIStroke", MainFrame)
 mStroke.Color = Color3.fromRGB(60, 60, 60)
@@ -361,7 +383,7 @@ local Title = Instance.new("TextLabel", TopBar)
 Title.Size = UDim2.new(1, -10, 1, 0)
 Title.Position = UDim2.new(0, 12, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "HONKUKI DEEP VALIDATOR SCANNER (MULTI-TARGET PLAY)"
+Title.Text = "HONKUKI DEEP VALIDATOR SCANNER (HORIZONTAL-LIGHT)"
 Title.TextColor3 = Color3.fromRGB(255, 215, 0)
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 11
@@ -388,7 +410,7 @@ local BLayout = Instance.new("UIListLayout", ButtonsContainer)
 BLayout.Padding = UDim.new(0, 3)
 
 local GetIDBtn = Instance.new("TextButton", ButtonsContainer)
-GetIDBtn.Size = UDim2.new(1, 0, 0, 22)
+GetIDBtn.Size = UDim2.new(1, 0, 0, 24)
 GetIDBtn.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
 GetIDBtn.Text = "⚡ เจาะและดึงไอดีทั้งหมดทันที"
 GetIDBtn.Font = Enum.Font.GothamBold
@@ -397,7 +419,7 @@ GetIDBtn.TextColor3 = Color3.fromRGB(20, 20, 20)
 Instance.new("UICorner", GetIDBtn).CornerRadius = UDim.new(0, 4)
 
 local GetJunkBtn = Instance.new("TextButton", ButtonsContainer)
-GetJunkBtn.Size = UDim2.new(1, 0, 0, 22)
+GetJunkBtn.Size = UDim2.new(1, 0, 0, 24)
 GetJunkBtn.BackgroundColor3 = Color3.fromRGB(230, 90, 40)
 GetJunkBtn.Text = "🎵 เปิดเพลงตามขยะอย่างเดียว"
 GetJunkBtn.Font = Enum.Font.GothamBold
@@ -406,7 +428,7 @@ GetJunkBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 Instance.new("UICorner", GetJunkBtn).CornerRadius = UDim.new(0, 4)
 
 local ViewRawJunkBtn = Instance.new("TextButton", ButtonsContainer)
-ViewRawJunkBtn.Size = UDim2.new(1, 0, 0, 22)
+ViewRawJunkBtn.Size = UDim2.new(1, 0, 0, 24)
 ViewRawJunkBtn.BackgroundColor3 = Color3.fromRGB(140, 20, 230)
 ViewRawJunkBtn.Text = "👁️ ดูข้อความ RAW ดิบของผู้เล่น"
 ViewRawJunkBtn.Font = Enum.Font.GothamBold
@@ -415,7 +437,7 @@ ViewRawJunkBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 Instance.new("UICorner", ViewRawJunkBtn).CornerRadius = UDim.new(0, 4)
 
 local ViewInstantBtn = Instance.new("TextButton", ButtonsContainer)
-ViewInstantBtn.Size = UDim2.new(1, 0, 0, 22)
+ViewInstantBtn.Size = UDim2.new(1, 0, 0, 24)
 ViewInstantBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
 ViewInstantBtn.Text = "🔍 ดู ID เจาะทั้งหมด (Real-time)"
 ViewInstantBtn.Font = Enum.Font.GothamBold
@@ -423,27 +445,12 @@ ViewInstantBtn.TextSize = 10
 ViewInstantBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 Instance.new("UICorner", ViewInstantBtn).CornerRadius = UDim.new(0, 4)
 
-local AdminCmdBtn = nil
-if IsAdmin then
-    AdminCmdBtn = Instance.new("TextButton", ButtonsContainer)
-    AdminCmdBtn.Size = UDim2.new(1, 0, 0, 22)
-    AdminCmdBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-    AdminCmdBtn.Text = "👑 ADMIN COMMANDS (ดูคำสั่งคำแชท)"
-    AdminCmdBtn.Font = Enum.Font.GothamBold
-    AdminCmdBtn.TextSize = 10
-    AdminCmdBtn.TextColor3 = Color3.fromRGB(255, 215, 0)
-    Instance.new("UICorner", AdminCmdBtn).CornerRadius = UDim.new(0, 4)
-    local aStroke = Instance.new("UIStroke", AdminCmdBtn)
-    aStroke.Color = Color3.fromRGB(255, 215, 0)
-    aStroke.Thickness = 1
-end
-
 StatusLabel = Instance.new("TextLabel", MainFrame)
 StatusLabel.Size = UDim2.new(0.68, 0, 0, 24)
 StatusLabel.Position = UDim2.new(0.03, 0, 0.86, 0)
 StatusLabel.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
 StatusLabel.BackgroundTransparency = 0.9
-StatusLabel.Text = IsAdmin and "ระบบพร้อมทำงาน..." or "🛡️ สคริปต์ทำงานปกติ"
+StatusLabel.Text = "ระบบพร้อมเจาะข้อมูลผู้เล่น..."
 StatusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
 StatusLabel.Font = Enum.Font.Gotham
 StatusLabel.TextSize = 10
@@ -474,7 +481,7 @@ tStroke.Color = Color3.fromRGB(255, 215, 0)
 tStroke.Thickness = 1.5
 setDrag(ToggleBtn, ToggleBtn)
 
--- ==================== หน้าต่างรองส่อง ====================
+-- ==================== หน้าต่างรองส่อง Real-time ====================
 local JunkFrame = Instance.new("Frame", ScreenGui)
 JunkFrame.Size = UDim2.new(0, 420, 0, 240)
 JunkFrame.Position = UDim2.new(0.5, -210, 0.5, -120)
@@ -548,6 +555,7 @@ local PlayerButtons = {}
 
 local function refreshPlayers()
     if not ListScroll or not ListScroll:IsDescendantOf(game) then return end
+    
     local currentPlayers = Players:GetPlayers()
     local activeMap = {}
 
@@ -566,12 +574,15 @@ local function refreshPlayers()
                 bStroke.Color = Color3.fromRGB(40, 40, 40)
 
                 btn.MouseButton1Click:Connect(function()
-                    for _, b in pairs(PlayerButtons) do
-                        if b:FindFirstChildOfClass("UIStroke") then b.UIStroke.Color = Color3.fromRGB(40, 40, 40) end
+                    for playerObj, b in pairs(PlayerButtons) do
+                        if b:FindFirstChildOfClass("UIStroke") then
+                            b.UIStroke.Color = Color3.fromRGB(40, 40, 40)
+                        end
                     end
                     bStroke.Color = Color3.fromRGB(255, 215, 0)
                     CurrentSelectedPlayer = p
                     StatusLabel.Text = "เลือก: " .. p.DisplayName
+                    updateJunkViewerLive()
                 end)
                 PlayerButtons[p] = btn
             end
@@ -585,30 +596,40 @@ local function refreshPlayers()
                 btn.TextColor3 = Color3.fromRGB(230, 230, 230)
             end
 
-            if CurrentSelectedPlayer == p then btn.UIStroke.Color = Color3.fromRGB(255, 215, 0) end
+            if CurrentSelectedPlayer == p then
+                btn.UIStroke.Color = Color3.fromRGB(255, 215, 0)
+            end
         end
     end
 
     for p, btn in pairs(PlayerButtons) do
-        if not activeMap[p] then btn:Destroy() PlayerButtons[p] = nil end
+        if not activeMap[p] then
+            btn:Destroy()
+            PlayerButtons[p] = nil
+        end
     end
+
     ListScroll.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y)
 end
 
 function updateJunkViewerLive()
     if not JunkFrame.Visible then return end
+
     local outputText = ""
 
-    if CurrentSelectedPlayer and CurrentViewMode ~= 3 then
+    if CurrentSelectedPlayer then
         local targetPlayer = Players:FindFirstChild(CurrentSelectedPlayer.Name)
         if not targetPlayer then return end
+        
         local soundObjects = checkPlayerAllSounds(targetPlayer)
 
         if CurrentViewMode == 1 then
             JunkTitle.Text = "RAW JUNK VIEWER (ขยะดิบทั้งหมด 100%)"
             jStroke.Color = Color3.fromRGB(140, 20, 230)
             JunkCopyBtn.BackgroundColor3 = Color3.fromRGB(140, 20, 230)
-            if #soundObjects == 0 then outputText = "❌ ไม่พบออบเจกต์เสียงบนตัวผู้เล่นนี้"
+            
+            if #soundObjects == 0 then 
+                outputText = "❌ ไม่พบออบเจกต์เสียงบนตัวผู้เล่นนี้"
             else
                 for i, obj in ipairs(soundObjects) do
                     outputText = outputText .. string.format("[%d] ออบเจกต์: %s\nID ดั้งเดิม: %s\n\n", i, obj:GetFullName(), obj.SoundId)
@@ -618,7 +639,9 @@ function updateJunkViewerLive()
             JunkTitle.Text = "INSTANT LOG VIEWER (ID เจาะสดเรียลไทม์)"
             jStroke.Color = Color3.fromRGB(0, 200, 100)
             JunkCopyBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-            if #soundObjects == 0 then outputText = "❌ ไม่พบค่าตัวแปรเพลงของผู้เล่นนี้"
+            
+            if #soundObjects == 0 then
+                outputText = "❌ ไม่พบค่าตัวแปรเพลงของผู้เล่นนี้"
             else
                 local finalIds = {}
                 local seenIds = {}
@@ -626,38 +649,32 @@ function updateJunkViewerLive()
                     local rawId = soundObj.SoundId or ""
                     local decoded = deepDecode(rawId)
                     local searchText = (decoded ~= "" and decoded) or rawId
+
                     local extractedIds = extractIDsFromPattern(searchText)
                     if #extractedIds == 0 then
                         for num in string.gmatch(searchText, "%d+") do
                             if not BlockedIDs[num] then table.insert(extractedIds, num) end
                         end
                     end
+
                     for _, id in ipairs(extractedIds) do
-                        if not seenIds[id] then seenIds[id] = true table.insert(finalIds, id) end
+                        if not seenIds[id] then
+                            seenIds[id] = true
+                            table.insert(finalIds, id)
+                        end
                     end
                 end
-                if #finalIds == 0 then outputText = "❌ ดึงค่าแล้วไม่พบ ID เพลงจริงอยู่ข้างในเลย"
+                
+                if #finalIds == 0 then
+                    outputText = "❌ ดึงค่าแล้วไม่พบ ID เพลงจริงอยู่ข้างในเลย (โดนบล็อกทั้งหมด)"
                 else
                     outputText = "--- พบบทเพลงเจาะสำเร็จทั้งหมด " .. #finalIds .. " ID ---\n\n"
-                    for idx, id in ipairs(finalIds) do outputText = outputText .. string.format("[%d] ID เจาะได้: %s\n", idx, id) end
+                    for idx, id in ipairs(finalIds) do
+                        outputText = outputText .. string.format("[%d] ID เจาะได้: %s\n", idx, id)
+                    end
                 end
             end
         end
-    elseif CurrentViewMode == 3 then
-        JunkTitle.Text = "👑 ADMIN COMMANDS LIST (@" .. AdminUsername .. ")"
-        jStroke.Color = Color3.fromRGB(180, 0, 255)
-        JunkCopyBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
-        outputText = [[👑 รายชื่อคำสั่งแชทแกล้งคน:
-;p [ชื่อเป้าหมาย] [IDเพลง] - สั่งเป้าหมายเล่นเพลง (ซ่อนข้อความแชทเบื้องหลัง 100%)
-;p [IDเพลง] - สั่งตัวเราเองเล่นเพลง
-;check - เช็กคนรันสคริปต์
-;kill [ชื่อ] - ฆ่าผู้เล่น
-;freeze [ชื่อ] - แช่แข็งผู้เล่น
-;unfreeze [ชื่อ] - ปลดแช่แข็ง
-;bring [ชื่อ] - ดึงผู้เล่นมาหาเรา
-;tp [ชื่อ] - วาร์ปไปหา
-;void [ชื่อ] - ส่งตกโลก
-;fling [ชื่อ] - ดีดกระเด็น]]
     end
 
     if JunkTextLabel.Text ~= outputText then
@@ -686,7 +703,10 @@ GetIDBtn.MouseButton1Click:Connect(function()
                 end
             end
             for _, id in ipairs(extractedIds) do
-                if not seenIds[id] then seenIds[id] = true table.insert(finalIds, id) end
+                if not seenIds[id] then
+                    seenIds[id] = true
+                    table.insert(finalIds, id)
+                end
             end
         end
         if #finalIds > 0 then
@@ -702,21 +722,25 @@ end)
 
 GetJunkBtn.MouseButton1Click:Connect(function()
     if CurrentSelectedPlayer then
-        StatusLabel.Text = "🎵 กำลังเปิดเพลงตามเป้าหมาย..."
+        StatusLabel.Text = "🎵 กำลังยิงคำสั่งเปิดเพลงตามขยะ..."
         local targetPlayer = Players:FindFirstChild(CurrentSelectedPlayer.Name)
         local soundObjects = checkPlayerAllSounds(targetPlayer)
         local firstCleanId = nil
         for _, soundObj in ipairs(soundObjects) do
             local rawId = soundObj.SoundId or ""
             local cleanId = string.gsub(rawId, "^rbxassetid://", "")
-            if string.find(cleanId, "rbxassetid://") then cleanId = string.match(cleanId, "rbxassetid://(%d+)") or cleanId end
-            if not BlockedIDs[cleanId] and cleanId ~= "" then firstCleanId = cleanId break end
+            if string.find(cleanId, "rbxassetid://") then
+                cleanId = string.match(cleanId, "rbxassetid://(%d+)") or cleanId
+            end
+            if not BlockedIDs[cleanId] and cleanId ~= "" then
+                firstCleanId = cleanId
+                break
+            end
         end
-        if firstCleanId then
-            playMusicFromId(firstCleanId)
-            StatusLabel.Text = "✅ สั่งเปิดเพลงสำเร็จ: " .. firstCleanId
+        if firstCleanId and playMusicFromId(firstCleanId) then
+            StatusLabel.Text = "✅ เปิดเพลงสำเร็จ: " .. firstCleanId
         else
-            StatusLabel.Text = "❌ เล่นเพลงไม่สำเร็จ"
+            StatusLabel.Text = "❌ เล่นเพลงไม่สำเร็จ หรือโดนบล็อก"
         end
     else
         StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อนเปิดเพลง!"
@@ -728,9 +752,9 @@ ViewRawJunkBtn.MouseButton1Click:Connect(function()
         CurrentViewMode = 1
         JunkFrame.Visible = true
         updateJunkViewerLive()
-        StatusLabel.Text = "👁️ เปิดหน้าต่าง RAW เรียลไทม์แล้ว"
+        StatusLabel.Text = "👁️ เปิดหน้าต่างแสดงขยะ RAW เรียลไทม์แล้ว"
     else
-        StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อน!"
+        StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อนกดดูขยะดิบ!"
     end
 end)
 
@@ -739,220 +763,56 @@ ViewInstantBtn.MouseButton1Click:Connect(function()
         CurrentViewMode = 2
         JunkFrame.Visible = true
         updateJunkViewerLive()
-        StatusLabel.Text = "🔍 เปิดหน้าต่างสแกน ID สด"
+        StatusLabel.Text = "🔍 เปิดหน้าต่างสแกน ID เจาะสด Real-time"
     else
-        StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อน!"
+        StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อนกดดู ID เจาะสด!"
     end
 end)
-
-if AdminCmdBtn then
-    AdminCmdBtn.MouseButton1Click:Connect(function()
-        CurrentViewMode = 3
-        JunkFrame.Visible = true
-        updateJunkViewerLive()
-        StatusLabel.Text = "👑 เปิดหน้าต่างคำสั่ง ADMIN"
-    end)
-end
 
 JunkCopyBtn.MouseButton1Click:Connect(function()
     if JunkTextLabel.Text ~= "ไม่มีข้อมูล..." and not string.find(JunkTextLabel.Text, "❌") then
         copyToClipboard(JunkTextLabel.Text)
-        StatusLabel.Text = "📋 คัดลอกเนื้อหาเรียบร้อย!"
+        StatusLabel.Text = "📋 คัดลอกเนื้อหาทั้งหมดเรียบร้อย!"
     end
 end)
 
 JunkBackBtn.MouseButton1Click:Connect(function()
     JunkFrame.Visible = false
-    StatusLabel.Text = "⬅️ กลับสู่แผงควบคุมหลัก"
+    StatusLabel.Text = "⬅️ กลับสู่แผงควบคุมหลักแนวนอนแล้ว"
 end)
 
 RefreshBtn.MouseButton1Click:Connect(refreshPlayers)
+
 Players.PlayerAdded:Connect(refreshPlayers)
 Players.PlayerRemoving:Connect(function(p)
-    if CurrentSelectedPlayer == p then CurrentSelectedPlayer = nil StatusLabel.Text = "โปรดเลือกผู้เล่น..." end
+    if CurrentSelectedPlayer == p then
+        CurrentSelectedPlayer = nil
+        StatusLabel.Text = "โปรดเลือกผู้เล่น..."
+    end
     refreshPlayers()
 end)
 
 ToggleBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
-    if not MainFrame.Visible then JunkFrame.Visible = false else refreshPlayers() end
+    if not MainFrame.Visible then 
+        JunkFrame.Visible = false 
+    else
+        refreshPlayers()
+    end
 end)
 
 task.spawn(function()
     while true do
         task.wait(1.5)
         if MainFrame.Visible then
-            pcall(function() refreshPlayers() if JunkFrame.Visible then updateJunkViewerLive() end end)
+            pcall(function()
+                refreshPlayers()
+                if JunkFrame.Visible then
+                    updateJunkViewerLive()
+                end
+            end)
         end
     end
 end)
+
 refreshPlayers()
-
--- =====================================================
--- 🟢 VISUAL CHECK TRACKER
--- =====================================================
-local function ShowVisualEffect()
-    local char = LocalPlayer.Character
-    if not char then return end
-    local head = char:FindFirstChild("Head") or char.PrimaryPart
-    if not head then return end
-
-    if char:FindFirstChild("ScriptUserHighlight") then char.ScriptUserHighlight:Destroy() end
-    if head:FindFirstChild("ScriptUserTag") then head.ScriptUserTag:Destroy() end
-
-    local highlight = Instance.new("Highlight", char)
-    highlight.Name = "ScriptUserHighlight"
-    highlight.FillColor = Color3.fromRGB(0, 255, 100)
-    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
-    highlight.FillTransparency = 0.3
-    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-
-    local billboard = Instance.new("BillboardGui", head)
-    billboard.Name = "ScriptUserTag"
-    billboard.Size = UDim2.new(0, 200, 0, 50)
-    billboard.StudsOffset = Vector3.new(0, 3, 0)
-    billboard.AlwaysOnTop = true
-
-    local label = Instance.new("TextLabel", billboard)
-    label.Size = UDim2.new(1, 0, 1, 0)
-    label.BackgroundTransparency = 1
-    label.Text = "🟢 RUNNING SCRIPT"
-    label.TextColor3 = Color3.fromRGB(0, 255, 120)
-    label.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-    label.Font = Enum.Font.FredokaOne
-    label.TextSize = 18
-
-    task.delay(2, function()
-        local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-        local t1 = TweenService:Create(highlight, tweenInfo, {FillTransparency = 1, OutlineTransparency = 1})
-        local t2 = TweenService:Create(label, tweenInfo, {TextTransparency = 1, TextStrokeTransparency = 1})
-        t1:Play() t2:Play()
-        t1.Completed:Connect(function() highlight:Destroy() billboard:Destroy() end)
-    end)
-end
-
--- =====================================================
--- 📡 ADMIN COMMAND EXECUTION (ระบบเดิม 100%)
--- =====================================================
-local function ExecuteAdminCommand(cmd, targetArg, extraArg, senderUsername)
-    if senderUsername:lower() ~= AdminUsername:lower() then return end
-
-    local targetPlayer = findTargetPlayer(targetArg)
-
-    if cmd == "p" or cmd == "playmusic" then
-        local musicId = targetArg
-        local designatedPlayer = LocalPlayer
-
-        if extraArg and tonumber(extraArg) then
-            musicId = extraArg
-            designatedPlayer = findTargetPlayer(targetArg) or CurrentSelectedPlayer or LocalPlayer
-        elseif targetArg and not tonumber(targetArg) then
-            designatedPlayer = findTargetPlayer(targetArg) or CurrentSelectedPlayer or LocalPlayer
-            musicId = nil 
-        end
-
-        if not musicId or musicId == "" then
-            if designatedPlayer and designatedPlayer.Character then
-                local soundObjects = checkPlayerAllSounds(designatedPlayer)
-                for _, soundObj in ipairs(soundObjects) do
-                    local cleanId = string.match(soundObj.SoundId or "", "(%d+)")
-                    if cleanId and not BlockedIDs[cleanId] then
-                        musicId = cleanId
-                        break
-                    end
-                end
-            end
-        end
-
-        if musicId and musicId ~= "" then
-            playMusicFromId(musicId)
-        end
-        return
-    end
-
-    if cmd == "check" then
-        ShowVisualEffect()
-        return
-    end
-
-    if cmd == "banscript" then
-        if targetPlayer and targetPlayer == LocalPlayer then ScreenGui:Destroy() end
-        return
-    end
-
-    if targetPlayer and targetPlayer == LocalPlayer then
-        local char = LocalPlayer.Character
-        local hum = char and char:FindFirstChildOfClass("Humanoid")
-        local hrp = char and char:FindFirstChild("HumanoidRootPart")
-
-        if cmd == "kill" then if hum then hum.Health = 0 end
-        elseif cmd == "freeze" then if hrp then hrp.Anchored = true end
-        elseif cmd == "unfreeze" then if hrp then hrp.Anchored = false end
-        elseif cmd == "bring" then
-            local adminPlayer = Players:FindFirstChild(senderUsername)
-            if adminPlayer and adminPlayer.Character and adminPlayer.Character:FindFirstChild("HumanoidRootPart") and hrp then
-                hrp.CFrame = adminPlayer.Character.HumanoidRootPart.CFrame
-            end
-        elseif cmd == "tp" then
-            local adminPlayer = Players:FindFirstChild(senderUsername)
-            if adminPlayer and adminPlayer == LocalPlayer and targetPlayer and targetPlayer.Character then
-                local aHrp = adminPlayer.Character:FindFirstChild("HumanoidRootPart")
-                if aHrp then aHrp.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame end
-            end
-        elseif cmd == "void" then if hrp then hrp.CFrame = hrp.CFrame * CFrame.new(0, -500, 0) end
-        elseif cmd == "fling" then
-            if hrp then
-                local bfv = Instance.new("BodyVelocity", hrp)
-                bfv.MaxForce = Vector3.new(1e9, 1e9, 1e9)
-                bfv.Velocity = Vector3.new(math.random(-500, 500), 1000, math.random(-500, 500))
-                task.delay(0.5, function() bfv:Destroy() end)
-            end
-        end
-    end
-end
-
--- =====================================================
--- 💬 CHAT LISTENER & HIDE SPECIFIC MUSIC MESSAGES
--- =====================================================
-local function ProcessChatMessage(message, senderPlayer)
-    if not message or not senderPlayer then return end
-    if senderPlayer.Name:lower() ~= AdminUsername:lower() then return end
-
-    local cleanMsg = string.match(message, "^%s*(.-)%s*$") or message
-    if string.lower(cleanMsg) == ";check" then
-        ExecuteAdminCommand("check", nil, nil, senderPlayer.Name)
-        return
-    end
-
-    if cleanMsg:sub(1, 1) == ";" then
-        local args = string.split(cleanMsg:sub(2), " ")
-        local cmd = args[1] and args[1]:lower()
-        local targetName = args[2]
-        local extraArg = args[3]
-        ExecuteAdminCommand(cmd, targetName, extraArg, senderPlayer.Name)
-    end
-end
-
-pcall(function()
-    if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-        TextChatService.OnIncomingMessage = function(message)
-            if message.TextSource then
-                local sender = Players:GetPlayerByUserId(message.TextSource.UserId)
-                if sender and sender.Name:lower() == AdminUsername:lower() then
-                    local text = message.Text
-                    if string.sub(text, 1, 3) == ";p " or string.sub(text, 1, 11) == ";playmusic " then
-                        message.Text = "" 
-                    end
-                end
-                if sender then ProcessChatMessage(message.Text, sender) end
-            end
-        end
-    end
-end)
-
-for _, p in ipairs(Players:GetPlayers()) do
-    p.Chatted:Connect(function(msg) ProcessChatMessage(msg, p) end)
-end
-Players.PlayerAdded:Connect(function(p)
-    p.Chatted:Connect(function(msg) ProcessChatMessage(msg, p) end)
-end)
