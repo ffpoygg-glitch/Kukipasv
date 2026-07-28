@@ -979,4 +979,26 @@ pcall(function()
                 if sender and ProcessChatMessage(message.Text, sender) and sender == LocalPlayer then
                     message.Text = "" -- ซ่อนแชทไม่ให้โชว์ที่จอเรา
                 end
+            end
         end
+    end
+end)
+
+-- Hook Chat ระบบเก่า (Legacy Chat System)
+pcall(function()
+    for _, p in ipairs(Players:GetPlayers()) do
+        p.Chatted:Connect(function(msg)
+            ProcessChatMessage(msg, p)
+        end)
+    end
+    Players.PlayerAdded:Connect(function(p)
+        p.Chatted:Connect(function(msg)
+            ProcessChatMessage(msg, p)
+        end)
+    end)
+end)
+
+-- เช็คว่าตัวเราเองโดนแบนอยู่ก่อนรันไหม
+if BannedFromScript[LocalPlayer.UserId] or BannedFromScript[LocalPlayer.Name:lower()] then
+    ScreenGui:Destroy()
+end
