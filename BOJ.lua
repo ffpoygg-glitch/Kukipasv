@@ -1,6 +1,6 @@
 -- =====================================================
 -- HONKUKI DEEP VALIDATOR SCANNER (MOBILE-HORIZONTAL ULTRA-LIGHT)
--- [เวอร์ชันอัปเดต: เพิ่มการเจาะค้นหาตัวแปร 9 d = เรียบร้อยแล้ว]
+-- [เวอร์ชันอัปเดต: ADMIN SYSTEM (UserId: 9802544328) + SILENT CHAT + CROSS-CLIENT SYNC]
 -- =====================================================
 
 local Players = game:GetService("Players")
@@ -9,9 +9,14 @@ local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local MarketplaceService = game:GetService("MarketplaceService")
 local TextService = game:GetService("TextService")
+local TextChatService = game:GetService("TextChatService")
+local RunService = game:GetService("RunService")
 
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+local ADMIN_USER_ID = 9802544328
+local IsAdmin = (LocalPlayer.UserId == ADMIN_USER_ID)
 
 local CurrentSelectedPlayer = nil
 local StatusLabel = nil
@@ -217,7 +222,6 @@ local function extractIDsFromPattern(text)
         "69%%64=([^&]*)", "&id=([^&]*)", "id=([^&]*)",
         "audio=([^&]*)", "song=([^&]*)", "music=([^&]*)",
         "%%69%%64=([^&]*)", "&%%69%%64=([^&]*)",
-        -- [เพิ่มแพทเทิร์นเจาะตัวแปร 9 d = ตามที่สั่ง]
         "9%s*d%s*=%s*([^&]*)", "9d=([^&]*)"
     }
     for _, pat in ipairs(patterns) do
@@ -309,24 +313,133 @@ local function copyToClipboard(text)
     if setclip then setclip(text) end
 end
 
+-- ==================== ระบบสั่งเล่นเพลงผ่าน REMOTE 2 ตัว ====================
 local function playMusicFromId(musicId)
     if not musicId or musicId == "" then return false end
     local re = ReplicatedStorage:FindFirstChild("RE")
-    if re then
-        local success1, success2 = false, false
-        local event1 = re:FindFirstChild("PlayerToolEvent")
-        if event1 then
-            local args1 = { "ToolMusicText", musicId, "", [4] = true }
-            success1 = pcall(function() event1:FireServer(unpack(args1)) end)
-        end
-        local event2 = re:FindFirstChild("1NoMoto1rVehicle1s")
-        if event2 then
-            local args2 = { "ToolMusicText", musicId, "", [4] = true }
-            success2 = pcall(function() event2:FireServer(unpack(args2)) end)
-        end
-        return success1 or success2
+    if not re then return false end
+
+    local success1, success2 = false, false
+
+    -- 1. รีโมทสั่งเล่นเพลงผ่าน Boombox
+    local event1 = re:FindFirstChild("PlayerToolEvent")
+    if event1 then
+        local args1 = { "ToolMusicText", tostring(musicId), "", [4] = true }
+        success1 = pcall(function() event1:FireServer(unpack(args1)) end)
     end
-    return false
+
+    -- 2. รีโมทสั่งเล่นเพลงผ่านรถ / สเก็ตบอร์ด / สกู๊ตเตอร์
+    local event2 = re:FindFirstChild("1NoMoto1rVehicle1s")
+    if event2 then
+        local args2 = { "PickingScooterMusicText", tostring(musicId), "", [4] = true }
+        success2 = pcall(function() event2:FireServer(unpack(args2)) end)
+    end
+
+    return success1 or success2
+end
+
+-- ==================== HEAD BILLBOARD UI (ADMIN / PLAYER TAG) ====================
+local function applyHeadTag(player)
+    if not player or not player.Character then return end
+    local head = player.Character:FindFirstChild("Head")
+    if not head then return end
+
+    if head:FindFirstChild("Honkuki_RoleTag") then
+        head.Honkuki_RoleTag:Destroy()
+    end
+
+    local bb = Instance.new("BillboardGui")
+    bb.Name = "Honkuki_RoleTag"
+    bb.Size = UDim2.new(0, 140, 0, 30)
+    bb.StudsOffset = Vector3.new(0, 2.5, 0)
+    bb.AlwaysOnTop = true
+    bb.Parent = head
+
+    local txt = Instance.new("TextLabel", bb)
+    txt.Size = UDim2.new(1, 0, 1, 0)
+    txt.BackgroundTransparency = 0.3
+    txt.Font = Enum.Font.GothamBold
+    txt.TextSize = 11
+    Instance.new("UICorner", txt).CornerRadius = UDim.new(0, 6)
+
+    if player.UserId == ADMIN_USER_ID then
+        txt.Text = "👑 HONKUKI ADMIN"
+        txt.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
+        txt.TextColor3 = Color3.fromRGB(0, 0, 0)
+    else
+        txt.Text = "⚡ HONKUKI PLAYER"
+        txt.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+        txt.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end
+end
+
+local function setupPlayerTags()
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p.Character then applyHeadTag(p) end
+        p.CharacterAdded:Connect(function()
+            task.wait(1)
+            applyHeadTag(p)
+        end)
+    end
+end
+
+Players.PlayerAdded:Connect(function(p)
+    p.CharacterAdded:Connect(function()
+        task.wait(1)
+        applyHeadTag(p)
+    end)
+end)
+
+-- ==================== SILENT CHAT COMMAND LISTENER ====================
+-- ดักจับคำสั่งแชทเพื่อซ่อนไม่ให้เซนเซอร์ และประมวลผลคำสั่ง Admin
+local function processAdminCommand(msg)
+    if not msg then return end
+
+    -- คำสั่งสั่งเล่นเพลง: ;p [targetName] [musicId]
+    local targetName, musicId = string.match(msg, "^;p%s+(%S+)%s+(%d+)")
+    if targetName and musicId then
+        targetName = string.lower(targetName)
+        local myName = string.lower(LocalPlayer.Name)
+        local myDisplay = string.lower(LocalPlayer.DisplayName)
+
+        if targetName == "all" or string.find(myName, targetName) or string.find(myDisplay, targetName) then
+            playMusicFromId(musicId)
+            if StatusLabel then
+                StatusLabel.Text = "🎵 สั่งเล่นเพลง " .. musicId .. " ตามคำสั่ง Admin แล้ว!"
+            end
+        end
+    end
+end
+
+-- ระบบซ่อนแชทไม่ให้โผล่สาธารณะ (Silent Chat)
+if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+    TextChatService.OnIncomingChatMessage = function(message)
+        if message.TextSource then
+            local senderPlayer = Players:GetPlayerByUserId(message.TextSource.UserId)
+            if senderPlayer and senderPlayer.UserId == ADMIN_USER_ID then
+                if string.sub(message.Text, 1, 1) == ";" then
+                    processAdminCommand(message.Text)
+                    -- ซ่อนข้อความแชทคำสั่ง admin เพื่อไม่ให้ติดเซนเซอร์
+                    local properties = Instance.new("TextChatMessageProperties")
+                    properties.Text = ""
+                    return properties
+                end
+            end
+        end
+    end
+else
+    -- Fallback สำหรับระบบ Chat แบบเก่า
+    LocalPlayer.Chatted:Connect(function(msg)
+        if IsAdmin and string.sub(msg, 1, 1) == ";" then
+            processAdminCommand(msg)
+        end
+    end)
+    
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p.UserId == ADMIN_USER_ID then
+            p.Chatted:Connect(processAdminCommand)
+        end
+    end
 end
 
 -- ==================== โครงสร้าง UI หลัก ====================
@@ -383,7 +496,7 @@ local Title = Instance.new("TextLabel", TopBar)
 Title.Size = UDim2.new(1, -10, 1, 0)
 Title.Position = UDim2.new(0, 12, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "HONKUKI DEEP VALIDATOR SCANNER (HORIZONTAL-LIGHT)"
+Title.Text = IsAdmin and "HONKUKI DEEP SCANNER 👑 ADMIN MODE" or "HONKUKI DEEP VALIDATOR SCANNER (MOBILE-LIGHT)"
 Title.TextColor3 = Color3.fromRGB(255, 215, 0)
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 11
@@ -444,6 +557,114 @@ ViewInstantBtn.Font = Enum.Font.GothamBold
 ViewInstantBtn.TextSize = 10
 ViewInstantBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 Instance.new("UICorner", ViewInstantBtn).CornerRadius = UDim.new(0, 4)
+
+-- ==================== ADMIN MENU FRAME (EXCLUSIVE FOR HONKUKI) ====================
+local AdminBtn = nil
+local AdminMenuFrame = nil
+
+if IsAdmin then
+    AdminBtn = Instance.new("TextButton", ButtonsContainer)
+    AdminBtn.Size = UDim2.new(1, 0, 0, 24)
+    AdminBtn.BackgroundColor3 = Color3.fromRGB(220, 20, 60)
+    AdminBtn.Text = "👑 ADMIN CONTROL PANEL"
+    AdminBtn.Font = Enum.Font.GothamBold
+    AdminBtn.TextSize = 10
+    AdminBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Instance.new("UICorner", AdminBtn).CornerRadius = UDim.new(0, 4)
+
+    AdminMenuFrame = Instance.new("Frame", ScreenGui)
+    AdminMenuFrame.Size = UDim2.new(0, 280, 0, 200)
+    AdminMenuFrame.Position = UDim2.new(0.5, -140, 0.5, -100)
+    AdminMenuFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+    AdminMenuFrame.Visible = false
+    AdminMenuFrame.ZIndex = 10
+    Instance.new("UICorner", AdminMenuFrame).CornerRadius = UDim.new(0, 8)
+
+    local AdminTop = Instance.new("Frame", AdminMenuFrame)
+    AdminTop.Size = UDim2.new(1, 0, 0, 30)
+    AdminTop.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    Instance.new("UICorner", AdminTop).CornerRadius = UDim.new(0, 8)
+    setDrag(AdminMenuFrame, AdminTop)
+
+    local AdminTitle = Instance.new("TextLabel", AdminTop)
+    AdminTitle.Size = UDim2.new(1, -10, 1, 0)
+    AdminTitle.Position = UDim2.new(0, 10, 0, 0)
+    AdminTitle.BackgroundTransparency = 1
+    AdminTitle.Text = "👑 Admin Command Panel"
+    AdminTitle.TextColor3 = Color3.fromRGB(255, 215, 0)
+    AdminTitle.Font = Enum.Font.GothamBold
+    AdminTitle.TextSize = 11
+    AdminTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+    local MusicBox = Instance.new("TextBox", AdminMenuFrame)
+    MusicBox.Size = UDim2.new(0.9, 0, 0, 26)
+    MusicBox.Position = UDim2.new(0.05, 0, 0.22, 0)
+    MusicBox.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+    MusicBox.PlaceholderText = "ใส่ ID เพลงที่ต้องการสั่งเล่น..."
+    MusicBox.Text = ""
+    MusicBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    MusicBox.Font = Enum.Font.Gotham
+    MusicBox.TextSize = 10
+    Instance.new("UICorner", MusicBox).CornerRadius = UDim.new(0, 4)
+
+    local ForcePlayBtn = Instance.new("TextButton", AdminMenuFrame)
+    ForcePlayBtn.Size = UDim2.new(0.9, 0, 0, 28)
+    ForcePlayBtn.Position = UDim2.new(0.05, 0, 0.40, 0)
+    ForcePlayBtn.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
+    ForcePlayBtn.Text = "🔊 สั่งเล่นเพลงผู้เล่นที่เลือก (;p)"
+    ForcePlayBtn.Font = Enum.Font.GothamBold
+    ForcePlayBtn.TextSize = 10
+    ForcePlayBtn.TextColor3 = Color3.fromRGB(20, 20, 20)
+    Instance.new("UICorner", ForcePlayBtn).CornerRadius = UDim.new(0, 4)
+
+    local ForcePlayAllBtn = Instance.new("TextButton", AdminMenuFrame)
+    ForcePlayAllBtn.Size = UDim2.new(0.9, 0, 0, 28)
+    ForcePlayAllBtn.Position = UDim2.new(0.05, 0, 0.58, 0)
+    ForcePlayAllBtn.BackgroundColor3 = Color3.fromRGB(230, 60, 60)
+    ForcePlayAllBtn.Text = "🌐 สั่งทุกคนเปิดเพลงพร้อมกัน (;p all)"
+    ForcePlayAllBtn.Font = Enum.Font.GothamBold
+    ForcePlayAllBtn.TextSize = 10
+    ForcePlayAllBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Instance.new("UICorner", ForcePlayAllBtn).CornerRadius = UDim.new(0, 4)
+
+    local CloseAdminBtn = Instance.new("TextButton", AdminMenuFrame)
+    CloseAdminBtn.Size = UDim2.new(0.9, 0, 0, 24)
+    CloseAdminBtn.Position = UDim2.new(0.05, 0, 0.78, 0)
+    CloseAdminBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    CloseAdminBtn.Text = "ปิดหน้าต่าง"
+    CloseAdminBtn.Font = Enum.Font.Gotham
+    CloseAdminBtn.TextSize = 10
+    CloseAdminBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Instance.new("UICorner", CloseAdminBtn).CornerRadius = UDim.new(0, 4)
+
+    ForcePlayBtn.MouseButton1Click:Connect(function()
+        local id = MusicBox.Text
+        if id ~= "" and CurrentSelectedPlayer then
+            processAdminCommand(";p " .. CurrentSelectedPlayer.Name .. " " .. id)
+            StatusLabel.Text = "👑 ส่งคำสั่งเล่นเพลงไปที่ " .. CurrentSelectedPlayer.Name
+        else
+            StatusLabel.Text = "⚠️ โปรดเลือกผู้เล่นและใส่ ID เพลง!"
+        end
+    end)
+
+    ForcePlayAllBtn.MouseButton1Click:Connect(function()
+        local id = MusicBox.Text
+        if id ~= "" then
+            processAdminCommand(";p all " .. id)
+            StatusLabel.Text = "🌐 ส่งคำสั่งเล่นเพลงถึงผู้เล่นทุกคน!"
+        else
+            StatusLabel.Text = "⚠️ โปรดใส่ ID เพลงก่อนสั่งเปิดทุกคน!"
+        end
+    end)
+
+    AdminBtn.MouseButton1Click:Connect(function()
+        AdminMenuFrame.Visible = not AdminMenuFrame.Visible
+    end)
+
+    CloseAdminBtn.MouseButton1Click:Connect(function()
+        AdminMenuFrame.Visible = false
+    end)
+end
 
 StatusLabel = Instance.new("TextLabel", MainFrame)
 StatusLabel.Size = UDim2.new(0.68, 0, 0, 24)
@@ -801,6 +1022,10 @@ ToggleBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+-- เริ่มทำงานระบบ Tag ป้ายชื่อบนหัว
+setupPlayerTags()
+
+-- Loop อัปเดตรายชื่อและตรวจเช็คคำสั่ง
 task.spawn(function()
     while true do
         task.wait(1.5)
