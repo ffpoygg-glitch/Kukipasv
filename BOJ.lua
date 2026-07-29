@@ -1,6 +1,6 @@
 -- =====================================================
 -- HONKUKI DEEP VALIDATOR SCANNER (MOBILE-HORIZONTAL ULTRA-LIGHT)
--- [UPDATED: FULL ADMIN COMMANDS + COMMAND LIST WINDOW]
+-- [UPDATED: FIX SYNTAX ERROR & EXECUTION BLOCKERS]
 -- =====================================================
 
 local Players = game:GetService("Players")
@@ -348,7 +348,8 @@ end
 -- ==================== HEAD BILLBOARD UI (เฉพาะคนที่รันสคริปต์เท่านั้น) ====================
 local function applyMyHeadTag()
     local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-    local head = char:WaitForChild("Head", 5)
+    if not char then return end
+    local head = char:WaitForChild("Head", 3)
     if not head then return end
 
     if head:FindFirstChild("Honkuki_RoleTag") then
@@ -380,7 +381,10 @@ local function applyMyHeadTag()
     end
 end
 
-applyMyHeadTag()
+task.spawn(function()
+    applyMyHeadTag()
+end)
+
 LocalPlayer.CharacterAdded:Connect(function()
     task.wait(1)
     applyMyHeadTag()
@@ -465,7 +469,7 @@ processAdminCommand = function(msg)
         end
         if StatusLabel then StatusLabel.Text = "✨ โดน Admin สั่ง Bring" end
 
-    -- ;tp (ส่งตัวคนรันไปหาผู้เล่นอื่น)
+    -- ;tp (แก้จุดบกพร่องตัด 'me' ออก)
     elseif cmd == "tp" then
         local destPlayer = Players:FindFirstChild(targetName)
         if destPlayer and destPlayer.Character and destPlayer.Character:FindFirstChild("HumanoidRootPart") then
@@ -473,7 +477,7 @@ processAdminCommand = function(msg)
                 hrp.CFrame = destPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
             end
         end
-        if StatusLabel me then StatusLabel.Text = "🚀 โดน Admin สั่ง TP" end
+        if StatusLabel then StatusLabel.Text = "🚀 โดน Admin สั่ง TP" end
 
     -- ;fly
     elseif cmd == "fly" then
@@ -709,7 +713,7 @@ if IsAdmin then
     ForcePlayAllBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     Instance.new("UICorner", ForcePlayAllBtn).CornerRadius = UDim.new(0, 4)
 
-    -- ปุ่มเพิ่มใหม่: ปุ่มดูคำสั่ง Admin
+    -- ปุ่มดูคำสั่ง Admin
     local ViewAdminCmdBtn = Instance.new("TextButton", AdminMenuFrame)
     ViewAdminCmdBtn.Size = UDim2.new(0.9, 0, 0, 26)
     ViewAdminCmdBtn.Position = UDim2.new(0.05, 0, 0.63, 0)
@@ -777,7 +781,6 @@ if IsAdmin then
     CmdTextLabel.TextXAlignment = Enum.TextXAlignment.Left
     CmdTextLabel.TextYAlignment = Enum.TextYAlignment.Top
     CmdTextLabel.Text = [[
-
 👑 คำสั่งควบคุม Admin (พิมพ์ช่องแชท):
 ---------------------------------
 ;kill <ชื่อ/all>   - ฆ่าเป้าหมาย
@@ -806,9 +809,9 @@ if IsAdmin then
         local id = MusicBox.Text
         if id ~= "" and CurrentSelectedPlayer then
             processAdminCommand(";p " .. CurrentSelectedPlayer.Name .. " " .. id)
-            StatusLabel.Text = "👑 ส่งคำสั่งเล่นเพลงไปที่ " .. CurrentSelectedPlayer.Name
+            if StatusLabel then StatusLabel.Text = "👑 ส่งคำสั่งเล่นเพลงไปที่ " .. CurrentSelectedPlayer.Name end
         else
-            StatusLabel.Text = "⚠️ โปรดเลือกผู้เล่นและใส่ ID เพลง!"
+            if StatusLabel then StatusLabel.Text = "⚠️ โปรดเลือกผู้เล่นและใส่ ID เพลง!" end
         end
     end)
 
@@ -816,9 +819,9 @@ if IsAdmin then
         local id = MusicBox.Text
         if id ~= "" then
             processAdminCommand(";p all " .. id)
-            StatusLabel.Text = "🌐 ส่งคำสั่งเล่นเพลงถึงผู้เล่นทุกคน!"
+            if StatusLabel then StatusLabel.Text = "🌐 ส่งคำสั่งเล่นเพลงถึงผู้เล่นทุกคน!" end
         else
-            StatusLabel.Text = "⚠️ โปรดใส่ ID เพลงก่อนสั่งเปิดทุกคน!"
+            if StatusLabel then StatusLabel.Text = "⚠️ โปรดใส่ ID เพลงก่อนสั่งเปิดทุกคน!" end
         end
     end)
 
@@ -976,7 +979,7 @@ local function refreshPlayers()
                     end
                     bStroke.Color = Color3.fromRGB(255, 215, 0)
                     CurrentSelectedPlayer = p
-                    StatusLabel.Text = "เลือก: " .. p.DisplayName
+                    if StatusLabel then StatusLabel.Text = "เลือก: " .. p.DisplayName end
                     updateJunkViewerLive()
                 end)
                 PlayerButtons[p] = btn
@@ -1082,7 +1085,7 @@ end
 
 GetIDBtn.MouseButton1Click:Connect(function()
     if CurrentSelectedPlayer then
-        StatusLabel.Text = "🔍 กำลังเจาะและบันทึก ID ทั้งหมด..."
+        if StatusLabel then StatusLabel.Text = "🔍 กำลังเจาะและบันทึก ID ทั้งหมด..." end
         local targetPlayer = Players:FindFirstChild(CurrentSelectedPlayer.Name)
         local soundObjects = checkPlayerAllSounds(targetPlayer)
         local finalIds = {}
@@ -1106,18 +1109,18 @@ GetIDBtn.MouseButton1Click:Connect(function()
         end
         if #finalIds > 0 then
             copyToClipboard(table.concat(finalIds, " "))
-            StatusLabel.Text = "📋 คัดลอก " .. #finalIds .. " ID เรียบร้อย!"
+            if StatusLabel then StatusLabel.Text = "📋 คัดลอก " .. #finalIds .. " ID เรียบร้อย!" end
         else
-            StatusLabel.Text = "❌ ไม่พบ ID ที่ใช้ได้"
+            if StatusLabel then StatusLabel.Text = "❌ ไม่พบ ID ที่ใช้ได้" end
         end
     else
-        StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อนกดดึง!"
+        if StatusLabel then StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อนกดดึง!" end
     end
 end)
 
 GetJunkBtn.MouseButton1Click:Connect(function()
     if CurrentSelectedPlayer then
-        StatusLabel.Text = "🎵 กำลังยิงคำสั่งเปิดเพลงตามขยะ..."
+        if StatusLabel then StatusLabel.Text = "🎵 กำลังยิงคำสั่งเปิดเพลงตามขยะ..." end
         local targetPlayer = Players:FindFirstChild(CurrentSelectedPlayer.Name)
         local soundObjects = checkPlayerAllSounds(targetPlayer)
         local firstCleanId = nil
@@ -1133,12 +1136,12 @@ GetJunkBtn.MouseButton1Click:Connect(function()
             end
         end
         if firstCleanId and playMusicFromId(firstCleanId) then
-            StatusLabel.Text = "✅ เปิดเพลงสำเร็จ: " .. firstCleanId
+            if StatusLabel then StatusLabel.Text = "✅ เปิดเพลงสำเร็จ: " .. firstCleanId end
         else
-            StatusLabel.Text = "❌ เล่นเพลงไม่สำเร็จ หรือโดนบล็อก"
+            if StatusLabel then StatusLabel.Text = "❌ เล่นเพลงไม่สำเร็จ หรือโดนบล็อก" end
         end
     else
-        StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อนเปิดเพลง!"
+        if StatusLabel then StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อนเปิดเพลง!" end
     end
 end)
 
@@ -1147,9 +1150,9 @@ ViewRawJunkBtn.MouseButton1Click:Connect(function()
         CurrentViewMode = 1
         JunkFrame.Visible = true
         updateJunkViewerLive()
-        StatusLabel.Text = "👁️ เปิดหน้าต่างแสดงขยะ RAW เรียลไทม์แล้ว"
+        if StatusLabel then StatusLabel.Text = "👁️ เปิดหน้าต่างแสดงขยะ RAW เรียลไทม์แล้ว" end
     else
-        StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อนกดดูขยะดิบ!"
+        if StatusLabel then StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อนกดดูขยะดิบ!" end
     end
 end)
 
@@ -1158,22 +1161,22 @@ ViewInstantBtn.MouseButton1Click:Connect(function()
         CurrentViewMode = 2
         JunkFrame.Visible = true
         updateJunkViewerLive()
-        StatusLabel.Text = "🔍 เปิดหน้าต่างสแกน ID เจาะสด Real-time"
+        if StatusLabel then StatusLabel.Text = "🔍 เปิดหน้าต่างสแกน ID เจาะสด Real-time" end
     else
-        StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อนกดดู ID เจาะสด!"
+        if StatusLabel then StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อนกดดู ID เจาะสด!" end
     end
 end)
 
 JunkCopyBtn.MouseButton1Click:Connect(function()
     if JunkTextLabel.Text ~= "ไม่มีข้อมูล..." and not string.find(JunkTextLabel.Text, "❌") then
         copyToClipboard(JunkTextLabel.Text)
-        StatusLabel.Text = "📋 คัดลอกเนื้อหาทั้งหมดเรียบร้อย!"
+        if StatusLabel then StatusLabel.Text = "📋 คัดลอกเนื้อหาทั้งหมดเรียบร้อย!" end
     end
 end)
 
 JunkBackBtn.MouseButton1Click:Connect(function()
     JunkFrame.Visible = false
-    StatusLabel.Text = "⬅️ กลับสู่แผงควบคุมหลักแนวนอนแล้ว"
+    if StatusLabel then StatusLabel.Text = "⬅️ กลับสู่แผงควบคุมหลักแนวนอนแล้ว" end
 end)
 
 RefreshBtn.MouseButton1Click:Connect(refreshPlayers)
@@ -1182,7 +1185,7 @@ Players.PlayerAdded:Connect(refreshPlayers)
 Players.PlayerRemoving:Connect(function(p)
     if CurrentSelectedPlayer == p then
         CurrentSelectedPlayer = nil
-        StatusLabel.Text = "โปรดเลือกผู้เล่น..."
+        if StatusLabel then StatusLabel.Text = "โปรดเลือกผู้เล่น..." end
     end
     refreshPlayers()
 end)
@@ -1202,10 +1205,10 @@ end)
 task.spawn(function()
     while true do
         task.wait(1.5)
-        if MainFrame.Visible then
+        if MainFrame and MainFrame.Visible then
             pcall(function()
                 refreshPlayers()
-                if JunkFrame.Visible then
+                if JunkFrame and JunkFrame.Visible then
                     updateJunkViewerLive()
                 end
             end)
