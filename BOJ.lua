@@ -1,6 +1,6 @@
 -- =====================================================
 -- HONKUKI DEEP VALIDATOR SCANNER (MOBILE-HORIZONTAL ULTRA-LIGHT)
--- [FIXED BUG: FORWARD DECLARATION & SAFE RUNTIME]
+-- [FIXED: HEAD TAG FOR SCRIPT EXECUTORS ONLY]
 -- =====================================================
 
 local Players = game:GetService("Players")
@@ -347,10 +347,10 @@ playMusicFromId = function(musicId)
     return success1 or success2
 end
 
--- ==================== HEAD BILLBOARD UI (ADMIN / PLAYER TAG) ====================
-local function applyHeadTag(player)
-    if not player or not player.Character then return end
-    local head = player.Character:FindFirstChild("Head")
+-- ==================== HEAD BILLBOARD UI (เฉพาะคนที่รันสคริปต์เท่านั้น) ====================
+local function applyMyHeadTag()
+    local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local head = char:WaitForChild("Head", 5)
     if not head then return end
 
     if head:FindFirstChild("Honkuki_RoleTag") then
@@ -371,7 +371,8 @@ local function applyHeadTag(player)
     txt.TextSize = 11
     Instance.new("UICorner", txt).CornerRadius = UDim.new(0, 6)
 
-    if player.UserId == ADMIN_USER_ID then
+    -- ตรวจสอบว่าคนที่รันเป็น Admin หรือ Player ทั่วไปที่นำสคริปต์ไปใช้
+    if LocalPlayer.UserId == ADMIN_USER_ID then
         txt.Text = "👑 HONKUKI ADMIN"
         txt.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
         txt.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -382,21 +383,11 @@ local function applyHeadTag(player)
     end
 end
 
-local function setupPlayerTags()
-    for _, p in ipairs(Players:GetPlayers()) do
-        if p.Character then applyHeadTag(p) end
-        p.CharacterAdded:Connect(function()
-            task.wait(1)
-            applyHeadTag(p)
-        end)
-    end
-end
-
-Players.PlayerAdded:Connect(function(p)
-    p.CharacterAdded:Connect(function()
-        task.wait(1)
-        applyHeadTag(p)
-    end)
+-- สั่งแสดงป้ายเฉพาะ LocalPlayer (คนที่กดรันสคริปต์เท่านั้น)
+applyMyHeadTag()
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(1)
+    applyMyHeadTag()
 end)
 
 -- ==================== SILENT CHAT COMMAND LISTENER ====================
@@ -1021,9 +1012,6 @@ ToggleBtn.MouseButton1Click:Connect(function()
         refreshPlayers()
     end
 end)
-
--- เริ่มทำงานระบบ Tag ป้ายชื่อบนหัว
-setupPlayerTags()
 
 -- Loop อัปเดตรายชื่อและตรวจเช็คคำสั่ง
 task.spawn(function()
