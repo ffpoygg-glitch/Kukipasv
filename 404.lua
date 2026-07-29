@@ -1,6 +1,6 @@
 -- =====================================================================
 -- HONKUKI DEEP VALIDATOR SCANNER + REAL-TIME ADMIN & MUSIC CONTROL SYSTEM
--- [โครงสร้างเดิมอยู่ครบ 100% + เช็คคนรันจริง + เพิ่มระบบสั่งเล่นเพลง 2 รีโมท]
+-- [โครงสร้างเดิมอยู่ครบ 100% + ปรับระบบสั่งเพลงไม่ผ่านแชต + ถอดเมนูลอยแอดมินออก]
 -- =====================================================================
 
 local Players = game:GetService("Players")
@@ -800,29 +800,19 @@ end)
 
 CloseMusicBtn.MouseButton1Click:Connect(function() MusicControlFrame.Visible = false end)
 
-local function sendAdminChatMessage(msg)
-    local TextChatService = game:GetService("TextChatService")
-    if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-        local channel = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
-        if channel then channel:SendAsync(msg) end
-    else
-        ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents").SayMessageRequest:FireServer(msg, "All")
-    end
-end
-
+-- แก้ไข: สั่งเปิดเพลงโดยตรงผ่าน GUI โดยยิง Remote ตรงๆ ไม่ส่งข้อความเข้าช่องแชตหลัก
 SendMusicBtn.MouseButton1Click:Connect(function()
     local targetUser = UserInputBox.Text
     local songId = MusicIdInputBox.Text
-    if targetUser ~= "" and songId ~= "" then
-        if IsAdmin(LocalPlayer) then
-            sendAdminChatMessage(";playmusic " .. targetUser .. " " .. songId)
-            StatusLabel.Text = "👑 ส่งคำสั่งเล่นเพลง: " .. songId .. " ไปยัง " .. targetUser
+    if songId ~= "" then
+        local playSuccess = ForcePlayMusicCombo(songId)
+        if playSuccess then
+            StatusLabel.Text = "🎵 ยิงคำสั่งเล่นเพลงสำเร็จ: " .. songId
         else
-            ForcePlayMusicCombo(songId)
-            StatusLabel.Text = "🎵 สั่งเล่นเพลงตนเอง: " .. songId
+            StatusLabel.Text = "❌ ยิงคำสั่งเล่นเพลงไม่สำเร็จ (ไม่พบรีโมท)"
         end
     else
-        StatusLabel.Text = "⚠️ กรุณากรอกทั้งชื่อผู้เล่นและ ID เพลง!"
+        StatusLabel.Text = "⚠️ กรุณากรอก Asset ID เพลง!"
     end
 end)
 
@@ -1108,88 +1098,6 @@ ToggleBtn.MouseButton1Click:Connect(function()
         refreshPlayers()
     end
 end)
-
--- ==================== เมนูแอดมินแยกเฉพาะ (ADMIN DISASTER PANEL) ====================
-if IsAdmin(LocalPlayer) then
-    local AdminFrame = Instance.new("Frame", ScreenGui)
-    AdminFrame.Size = UDim2.new(0, 320, 0, 260)
-    AdminFrame.Position = UDim2.new(0.02, 0, 0.48, 0)
-    AdminFrame.BackgroundColor3 = Color3.fromRGB(20, 15, 25)
-    AdminFrame.ZIndex = 8
-    Instance.new("UICorner", AdminFrame).CornerRadius = UDim.new(0, 8)
-    local aStroke = Instance.new("UIStroke", AdminFrame)
-    aStroke.Color = Color3.fromRGB(255, 215, 0)
-    aStroke.Thickness = 1.5
-
-    local AdminTopBar = Instance.new("Frame", AdminFrame)
-    AdminTopBar.Size = UDim2.new(1, 0, 0, 30)
-    AdminTopBar.BackgroundColor3 = Color3.fromRGB(35, 25, 45)
-    Instance.new("UICorner", AdminTopBar).CornerRadius = UDim.new(0, 8)
-    setDrag(AdminFrame, AdminTopBar)
-
-    local AdminTitle = Instance.new("TextLabel", AdminTopBar)
-    AdminTitle.Size = UDim2.new(1, -10, 1, 0)
-    AdminTitle.Position = UDim2.new(0, 10, 0, 0)
-    AdminTitle.BackgroundTransparency = 1
-    AdminTitle.Text = "👑 ADMIN DISASTER PANEL (3 VIPs ONLY)"
-    AdminTitle.TextColor3 = Color3.fromRGB(255, 215, 0)
-    AdminTitle.Font = Enum.Font.GothamBold
-    AdminTitle.TextSize = 11
-    AdminTitle.TextXAlignment = Enum.TextXAlignment.Left
-
-    local CmdScroll = Instance.new("ScrollingFrame", AdminFrame)
-    CmdScroll.Size = UDim2.new(0.94, 0, 0, 215)
-    CmdScroll.Position = UDim2.new(0.03, 0, 0.14, 0)
-    CmdScroll.BackgroundColor3 = Color3.fromRGB(12, 10, 18)
-    CmdScroll.BorderSizePixel = 0
-    CmdScroll.ScrollBarThickness = 4
-    CmdScroll.ScrollBarImageColor3 = Color3.fromRGB(255, 215, 0)
-    Instance.new("UICorner", CmdScroll).CornerRadius = UDim.new(0, 5)
-
-    local CmdLayout = Instance.new("UIListLayout", CmdScroll)
-    CmdLayout.Padding = UDim.new(0, 4)
-
-    local CommandsChoice = {
-        {Name = "☠️ ฆ่าผู้เล่น (;kill)", Cmd = "kill"},
-        {Name = "🚀 สั่งบิน (;fly)", Cmd = "fly"},
-        {Name = "🛬 ยกเลิกบิน (;unfly)", Cmd = "unfly"},
-        {Name = "❄️ แช่แข็ง (;freeze)", Cmd = "freeze"},
-        {Name = "🔥 ปลดแช่แข็ง (;unfreeze)", Cmd = "unfreeze"},
-        {Name = "🧲 ดึงมาหา (;bring)", Cmd = "bring"},
-        {Name = "⚡ วาร์ปไปหา (;tp)", Cmd = "tp"},
-        {Name = "🌪️ ดีดปลิว (;fling)", Cmd = "fling"},
-        {Name = "🕳️ ลงหลุมดำ (;void)", Cmd = "void"},
-        {Name = "🌀 หมุนตัว (;spin)", Cmd = "spin"},
-        {Name = "💥 ฆ่าผู้เล่นทุกคน (;kill all)", Cmd = "kill_all"}
-    }
-
-    for _, choice in ipairs(CommandsChoice) do
-        local btn = Instance.new("TextButton", CmdScroll)
-        btn.Size = UDim2.new(1, -6, 0, 26)
-        btn.BackgroundColor3 = Color3.fromRGB(40, 30, 60)
-        btn.Text = "  " .. choice.Name
-        btn.TextColor3 = Color3.fromRGB(255, 230, 150)
-        btn.Font = Enum.Font.GothamBold
-        btn.TextSize = 10
-        btn.TextXAlignment = Enum.TextXAlignment.Left
-        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
-
-        btn.MouseButton1Click:Connect(function()
-            if choice.Cmd == "kill_all" then
-                sendAdminChatMessage(";kill all")
-                StatusLabel.Text = "👑 สั่งคำสั่ง: ;kill all เรียบร้อย!"
-            elseif CurrentSelectedPlayer then
-                local fullCmd = ";" .. choice.Cmd .. " " .. CurrentSelectedPlayer.Name
-                sendAdminChatMessage(fullCmd)
-                StatusLabel.Text = "👑 สั่งคำสั่ง: " .. fullCmd .. " สำเร็จ!"
-            else
-                StatusLabel.Text = "⚠️ โปรดเลือกเป้าหมายในเมนูก่อนกดคำสั่ง!"
-            end
-        end)
-    end
-
-    CmdScroll.CanvasSize = UDim2.new(0, 0, 0, CmdLayout.AbsoluteContentSize.Y)
-end
 
 -- Loop อัปเดตสถานะ Tag และข้อมูล Real-time (เช็คคนรันสคริปต์จริงเท่านั้น)
 task.spawn(function()
