@@ -1,6 +1,6 @@
 -- =====================================================
 -- HONKUKI DEEP VALIDATOR SCANNER (MOBILE-HORIZONTAL ULTRA-LIGHT)
--- [เวอร์ชันอัปเดต: ADMIN SYSTEM (UserId: 9802544328) + SILENT CHAT + CROSS-CLIENT SYNC]
+-- [FIXED BUG: FORWARD DECLARATION & SAFE RUNTIME]
 -- =====================================================
 
 local Players = game:GetService("Players")
@@ -20,11 +20,20 @@ local IsAdmin = (LocalPlayer.UserId == ADMIN_USER_ID)
 
 local CurrentSelectedPlayer = nil
 local StatusLabel = nil
+local CurrentViewMode = 1
+local PlayerButtons = {}
 
--- Cache ข้อมูลเพื่อลดภาระการโหลด
+-- -----------------------------------------------------
+-- [FORWARD DECLARATION] ประกาศชื่อฟังก์ชันล่วงหน้าเพื่อป้องกัน Script Crash
+-- -----------------------------------------------------
+local updateJunkViewerLive
+local processAdminCommand
+local playMusicFromId
+
+-- Cache ข้อมูล
 local AssetCache = {}
 
--- ==================== บล็อค ID ปลอม (อัปเดตใหม่ล่าสุด) ====================
+-- ==================== บล็อค ID ปลอม ====================
 local BlockedIDs = {
     ["00106800577264015"] = true, ["00109462618039650"] = true,
     ["00112583972042063"] = true, ["00113841533670628"] = true,
@@ -314,7 +323,7 @@ local function copyToClipboard(text)
 end
 
 -- ==================== ระบบสั่งเล่นเพลงผ่าน REMOTE 2 ตัว ====================
-local function playMusicFromId(musicId)
+playMusicFromId = function(musicId)
     if not musicId or musicId == "" then return false end
     local re = ReplicatedStorage:FindFirstChild("RE")
     if not re then return false end
@@ -391,11 +400,9 @@ Players.PlayerAdded:Connect(function(p)
 end)
 
 -- ==================== SILENT CHAT COMMAND LISTENER ====================
--- ดักจับคำสั่งแชทเพื่อซ่อนไม่ให้เซนเซอร์ และประมวลผลคำสั่ง Admin
-local function processAdminCommand(msg)
+processAdminCommand = function(msg)
     if not msg then return end
 
-    -- คำสั่งสั่งเล่นเพลง: ;p [targetName] [musicId]
     local targetName, musicId = string.match(msg, "^;p%s+(%S+)%s+(%d+)")
     if targetName and musicId then
         targetName = string.lower(targetName)
@@ -411,36 +418,32 @@ local function processAdminCommand(msg)
     end
 end
 
--- ระบบซ่อนแชทไม่ให้โผล่สาธารณะ (Silent Chat)
-if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-    TextChatService.OnIncomingChatMessage = function(message)
-        if message.TextSource then
-            local senderPlayer = Players:GetPlayerByUserId(message.TextSource.UserId)
-            if senderPlayer and senderPlayer.UserId == ADMIN_USER_ID then
-                if string.sub(message.Text, 1, 1) == ";" then
-                    processAdminCommand(message.Text)
-                    -- ซ่อนข้อความแชทคำสั่ง admin เพื่อไม่ให้ติดเซนเซอร์
-                    local properties = Instance.new("TextChatMessageProperties")
-                    properties.Text = ""
-                    return properties
+pcall(function()
+    if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+        TextChatService.OnIncomingChatMessage = function(message)
+            if message.TextSource then
+                local senderPlayer = Players:GetPlayerByUserId(message.TextSource.UserId)
+                if senderPlayer and senderPlayer.UserId == ADMIN_USER_ID then
+                    if string.sub(message.Text, 1, 1) == ";" then
+                        processAdminCommand(message.Text)
+                    end
                 end
             end
         end
-    end
-else
-    -- Fallback สำหรับระบบ Chat แบบเก่า
-    LocalPlayer.Chatted:Connect(function(msg)
-        if IsAdmin and string.sub(msg, 1, 1) == ";" then
-            processAdminCommand(msg)
+    else
+        LocalPlayer.Chatted:Connect(function(msg)
+            if IsAdmin and string.sub(msg, 1, 1) == ";" then
+                processAdminCommand(msg)
+            end
+        end)
+        
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p.UserId == ADMIN_USER_ID then
+                p.Chatted:Connect(processAdminCommand)
+            end
         end
-    end)
-    
-    for _, p in ipairs(Players:GetPlayers()) do
-        if p.UserId == ADMIN_USER_ID then
-            p.Chatted:Connect(processAdminCommand)
-        end
     end
-end
+end)
 
 -- ==================== โครงสร้าง UI หลัก ====================
 if PlayerGui:FindFirstChild("Honkuki_DeepSoundSpy") then PlayerGui.Honkuki_DeepSoundSpy:Destroy() end
@@ -771,9 +774,6 @@ JunkBackBtn.TextSize = 11
 JunkBackBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 Instance.new("UICorner", JunkBackBtn).CornerRadius = UDim.new(0, 5)
 
-local CurrentViewMode = 1
-local PlayerButtons = {}
-
 local function refreshPlayers()
     if not ListScroll or not ListScroll:IsDescendantOf(game) then return end
     
@@ -833,7 +833,7 @@ local function refreshPlayers()
     ListScroll.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y)
 end
 
-function updateJunkViewerLive()
+updateJunkViewerLive = function()
     if not JunkFrame.Visible then return end
 
     local outputText = ""
