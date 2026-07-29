@@ -1,7 +1,7 @@
--- =====================================================
--- HONKUKI DEEP VALIDATOR SCANNER + ADMIN COMMAND SYSTEM
--- [รักษาโครงสร้างเดิม 100% + เสริมระบบยศบนหัว + เมนูสั่งการ Disaster Admin]
--- =====================================================
+-- =====================================================================
+-- HONKUKI DEEP VALIDATOR SCANNER + REAL-TIME ADMIN & MUSIC CONTROL SYSTEM
+-- [โครงสร้างเดิมอยู่ครบ 100% + เช็คคนรันจริง + เพิ่มระบบสั่งเล่นเพลง 2 รีโมท]
+-- =====================================================================
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -32,17 +32,42 @@ local function IsAdmin(player)
     return AdminList[player.Name] == true
 end
 
--- ==================== ระบบสื่อสาร & TAG บนหัว (Real-time ทั้งเซิร์ฟ) ====================
-local TAG_NAME = "Honkuki_Active_Tag"
-local CMD_EVENT_NAME = "Honkuki_Admin_Dispatch"
+-- ==================== ระบบสื่อสาร & TAG บนหัว (เฉพาะคนรันสคริปต์จริง) ====================
+local TAG_NAME = "Honkuki_Active_Runner_Tag"
 
--- สร้าง Tag สำหรับรับคำสั่งและบอกสถานะ ยศบนหัว
+-- สร้าง Marker บนตัวผู้เล่นที่รันสคริปต์
+local function markSelfAsRunner()
+    if LocalPlayer.Character then
+        local tagVal = LocalPlayer.Character:FindFirstChild(TAG_NAME)
+        if not tagVal then
+            tagVal = Instance.new("BoolValue")
+            tagVal.Name = TAG_NAME
+            tagVal.Value = true
+            tagVal.Parent = LocalPlayer.Character
+        end
+    end
+end
+
+markSelfAsRunner()
+LocalPlayer.CharacterAdded:Connect(function(char)
+    task.wait(0.5)
+    markSelfAsRunner()
+end)
+
+-- ตรวจสอบและสร้าง Tag บนหัว (เฉพาะคนที่รันสคริปต์จริงที่มี TAG_NAME)
 local function setupPlayerTag(player)
+    if not player or not player.Character then return end
     local char = player.Character
-    if not char then return end
-    
     local head = char:WaitForChild("Head", 5)
     if not head then return end
+
+    -- เช็คก่อนว่ารันสคริปต์จริงไหม (ถ้าไม่มี Marker จะไม่สร้าง Tag ให้เด็ดขาด)
+    if not char:FindFirstChild(TAG_NAME) and player ~= LocalPlayer then
+        if head:FindFirstChild("HonkukiHeadTag") then
+            head.HonkukiHeadTag:Destroy()
+        end
+        return
+    end
 
     -- ลบ Tag เก่าถ้ามี
     if head:FindFirstChild("HonkukiHeadTag") then
@@ -51,7 +76,7 @@ local function setupPlayerTag(player)
 
     local billboard = Instance.new("BillboardGui")
     billboard.Name = "HonkukiHeadTag"
-    billboard.Size = UDim2.new(0, 150, 0, 30)
+    billboard.Size = UDim2.new(0, 160, 0, 32)
     billboard.StudsOffset = Vector3.new(0, 3, 0)
     billboard.AlwaysOnTop = true
     billboard.Parent = head
@@ -60,7 +85,7 @@ local function setupPlayerTag(player)
     tagLabel.Size = UDim2.new(1, 0, 1, 0)
     tagLabel.BackgroundTransparency = 1
     tagLabel.Font = Enum.Font.GothamBold
-    tagLabel.TextSize = 13
+    tagLabel.TextSize = 12
     tagLabel.TextStrokeTransparency = 0.2
 
     if IsAdmin(player) then
@@ -72,54 +97,43 @@ local function setupPlayerTag(player)
         tagLabel.TextColor3 = Color3.fromRGB(0, 255, 127)
         tagLabel.TextStrokeColor3 = Color3.fromRGB(0, 100, 50)
     end
+end
 
-    -- Tag ทำงานคู่กับ Character
-    local tagVal = char:FindFirstChild(TAG_NAME)
-    if not tagVal then
-        tagVal = Instance.new("BoolValue")
-        tagVal.Name = TAG_NAME
-        tagVal.Value = true
-        tagVal.Parent = char
+-- ==================== 2 REMOTE COMBO FOR MUSIC ====================
+local function ForcePlayMusicCombo(musicId)
+    if not musicId or musicId == "" then return false end
+    
+    local re = ReplicatedStorage:FindFirstChild("RE")
+    if not re then return false end
+    
+    local success1, success2, success3 = false, false, false
+    
+    -- Remote 1: PlayerToolEvent
+    local toolEvent = re:FindFirstChild("PlayerToolEvent")
+    if toolEvent then
+        local args1 = { "ToolMusicText", tostring(musicId), "", [4] = true }
+        success1 = pcall(function() toolEvent:FireServer(unpack(args1)) end)
     end
-end
-
-local function tagLocalPlayer()
-    if LocalPlayer.Character then 
-        setupPlayerTag(LocalPlayer) 
+    
+    -- Remote 2: 1NoMoto1rVehicle1s (Scooter / Vehicle)
+    local vehicleEvent = re:FindFirstChild("1NoMoto1rVehicle1s")
+    if vehicleEvent then
+        local args2 = { "ToolMusicText", tostring(musicId), "", [4] = true }
+        success2 = pcall(function() vehicleEvent:FireServer(unpack(args2)) end)
+        
+        local args3 = { "PickingScooterMusicText", tostring(musicId), "", [4] = true }
+        success3 = pcall(function() vehicleEvent:FireServer(unpack(args3)) end)
     end
+    
+    return success1 or success2 or success3
 end
-
-if LocalPlayer.Character then tagLocalPlayer() end
-LocalPlayer.CharacterAdded:Connect(function(char)
-    char:WaitForChild("Humanoid", 5)
-    task.wait(0.5)
-    tagLocalPlayer()
-end)
-
--- คอยเช็ค Tag บนหัวของผู้เล่นคนอื่นเมื่อเกิดใหม่
-for _, p in ipairs(Players:GetPlayers()) do
-    p.CharacterAdded:Connect(function(char)
-        char:WaitForChild("Humanoid", 5)
-        task.wait(0.5)
-        setupPlayerTag(p)
-    end)
-    if p.Character then setupPlayerTag(p) end
-end
-Players.PlayerAdded:Connect(function(p)
-    p.CharacterAdded:Connect(function(char)
-        char:WaitForChild("Humanoid", 5)
-        task.wait(0.5)
-        setupPlayerTag(p)
-    end)
-end)
 
 -- ==================== ระบบตัวรับสั่งภัยพิบัติ (Disaster Receiver) ====================
 local isFlying = false
 local flyConnection = nil
 local isSpinning = false
-local spinConnection = nil
 
-local function processAdminCommand(cmd, senderAdmin)
+local function processAdminCommand(cmd, senderAdmin, extraParam)
     local char = LocalPlayer.Character
     if not char then return end
     local hum = char:FindFirstChildOfClass("Humanoid")
@@ -152,9 +166,7 @@ local function processAdminCommand(cmd, senderAdmin)
             task.delay(1.5, function() bv:Destroy() bg:Destroy() end)
         end
     elseif cmd == "void" then
-        if root then
-            root.CFrame = CFrame.new(root.Position.X, -500, root.Position.Z)
-        end
+        if root then root.CFrame = CFrame.new(root.Position.X, -500, root.Position.Z) end
     elseif cmd == "fly" then
         if not isFlying and root then
             isFlying = true
@@ -168,8 +180,7 @@ local function processAdminCommand(cmd, senderAdmin)
             
             flyConnection = RunService.RenderStepped:Connect(function()
                 if not isFlying or not root then
-                    bg:Destroy()
-                    bv:Destroy()
+                    bg:Destroy() bv:Destroy()
                     if flyConnection then flyConnection:Disconnect() end
                     return
                 end
@@ -187,6 +198,10 @@ local function processAdminCommand(cmd, senderAdmin)
             bg.MaxTorque = Vector3.new(0, 1e9, 0)
             bg.AngularVelocity = Vector3.new(0, 30, 0)
         end
+    elseif cmd == "playmusic" then
+        if extraParam and extraParam ~= "" then
+            ForcePlayMusicCombo(extraParam)
+        end
     end
 end
 
@@ -199,12 +214,13 @@ local function listenToAdminChat(p)
                 local args = string.split(string.sub(msg, 2), " ")
                 local cmd = string.lower(args[1] or "")
                 local targetName = string.lower(args[2] or "")
+                local extraParam = args[3] or ""
 
                 local myName = string.lower(LocalPlayer.Name)
                 local myDisplay = string.lower(LocalPlayer.DisplayName)
 
                 if targetName == "all" or string.find(myName, targetName) or string.find(myDisplay, targetName) then
-                    processAdminCommand(cmd, p)
+                    processAdminCommand(cmd, p, extraParam)
                 end
             end
         end
@@ -214,7 +230,7 @@ end
 for _, p in ipairs(Players:GetPlayers()) do listenToAdminChat(p) end
 Players.PlayerAdded:Connect(listenToAdminChat)
 
--- ==================== บล็อค ID ปลอม (อัปเดตใหม่ล่าสุด) ====================
+-- ==================== บล็อค ID ปลอม (คงเดิม 100%) ====================
 local BlockedIDs = {
     ["00106800577264015"] = true, ["00109462618039650"] = true,
     ["00112583972042063"] = true, ["00113841533670628"] = true,
@@ -290,84 +306,46 @@ local BlockedIDs = {
     ["7402180465529731"] = true, ["6319548620017395"] = true,
     ["8135709247763587"] = true, ["9240651784430966"] = true,
     ["24213056027674"]   = true, ["543334512086734"] = true,
-    ["262185420860413"]  = true,
-    ["137434811238124"] = true,
-    ["400070907684669374"] = true,
-    ["7251328351"] = true,
-    ["1885881335441"] = true,
-    ["9972"] = true,
-    ["1399503975"] = true,
-    ["98989868891534"] = true,
-    ["04761075"] = true,
-    ["19559141331210"] = true,
-    ["97167526395722"] = true,
-    ["00135717653489469"] = true,
-    ["00117978901016225"] = true,
-    ["00131120650233515"] = true,
-    ["0078490779676864"] = true,
-    ["00117218102929740"] = true,
-    ["0094252516016921"] = true,
-    ["00136038459746844"] = true,
-    ["00139822448198319"] = true,
-    ["0070713244695741"] = true,
-    ["72034120547897"] = true,
-    ["112052998244603"] = true,
-    ["0098255111051273"] = true,
-    ["0094641125562624"] = true,
-    ["0088288669346964"] = true,
-    ["00105865479058889"] = true,
-    ["97254689160075"] = true,
-    ["122396455391746"] = true,
-    ["00131424277232086"] = true,
-    ["0075803753062002"] = true,
-    ["00111672619544063"] = true,
-    ["0073368804709511"] = true,
-    ["0079081439699719"] = true,
-    ["112304110902021"] = true,
-    ["86747216886858"] = true,
-    ["115703625280167"] = true,
-    ["71888511332145"] = true,
-    ["0095777599051645"] = true,
-    ["0096986144648971"] = true,
-    ["0097814679309386"] = true,
-    ["00125754236775831"] = true,
-    ["00117270024340473"] = true,
-    ["0093368365346019"] = true,
-    ["00110230276570667"] = true,
-    ["00126849958062666"] = true,
-    ["00119215996902118"] = true,
-    ["0092024219036595"] = true,
-    ["0096956767904014"] = true,
-    ["00131832663605571"] = true,
-    ["00124108858982827"] = true,
-    ["00100792843330236"] = true,
-    ["75818865124123"] = true,
-    ["81077586198430"] = true,
-    ["123771703997621"] = true,
-    ["90634248855281"] = true,
-    ["137632553110798"] = true,
-    ["0013603845"] = true,
-    ["00116795644452053"] = true,
-    ["0087506925032199"] = true,
-    ["00114854729127123"] = true,
-    ["0090543954744950"] = true,
-    ["00130372250847248"] = true,
-    ["00132565074561820"] = true,
-    ["0083370097021520"] = true,
-    ["0080728009566180"] = true,
-    ["00113578921715175"] = true,
-    ["0019006509949"] = true,
-    ["0096774521681190"] = true,
-    ["00135159509633580"] = true,
-    ["0087473955499107"] = true,
-    ["0083056197503510"] = true,
-    ["00104007943345258"] = true,
-    ["00138058631419886"] = true,
-    ["0082791323516669"] = true,
+    ["262185420860413"]  = true, ["137434811238124"] = true,
+    ["400070907684669374"] = true, ["7251328351"] = true,
+    ["1885881335441"] = true, ["9972"] = true, ["1399503975"] = true,
+    ["98989868891534"] = true, ["04761075"] = true, ["19559141331210"] = true,
+    ["97167526395722"] = true, ["00135717653489469"] = true,
+    ["00117978901016225"] = true, ["00131120650233515"] = true,
+    ["0078490779676864"] = true, ["00117218102929740"] = true,
+    ["0094252516016921"] = true, ["00136038459746844"] = true,
+    ["00139822448198319"] = true, ["0070713244695741"] = true,
+    ["72034120547897"] = true, ["112052998244603"] = true,
+    ["0098255111051273"] = true, ["0094641125562624"] = true,
+    ["0088288669346964"] = true, ["00105865479058889"] = true,
+    ["97254689160075"] = true, ["122396455391746"] = true,
+    ["00131424277232086"] = true, ["0075803753062002"] = true,
+    ["00111672619544063"] = true, ["0073368804709511"] = true,
+    ["0079081439699719"] = true, ["112304110902021"] = true,
+    ["86747216886858"] = true, ["115703625280167"] = true,
+    ["71888511332145"] = true, ["0095777599051645"] = true,
+    ["0096986144648971"] = true, ["0097814679309386"] = true,
+    ["00125754236775831"] = true, ["00117270024340473"] = true,
+    ["0093368365346019"] = true, ["00110230276570667"] = true,
+    ["00126849958062666"] = true, ["00119215996902118"] = true,
+    ["0092024219036595"] = true, ["0096956767904014"] = true,
+    ["00131832663605571"] = true, ["00124108858982827"] = true,
+    ["00100792843330236"] = true, ["75818865124123"] = true,
+    ["81077586198430"] = true, ["123771703997621"] = true,
+    ["90634248855281"] = true, ["137632553110798"] = true,
+    ["0013603845"] = true, ["00116795644452053"] = true,
+    ["0087506925032199"] = true, ["00114854729127123"] = true,
+    ["0090543954744950"] = true, ["00130372250847248"] = true,
+    ["00132565074561820"] = true, ["0083370097021520"] = true,
+    ["0080728009566180"] = true, ["00113578921715175"] = true,
+    ["0019006509949"] = true, ["0096774521681190"] = true,
+    ["00135159509633580"] = true, ["0087473955499107"] = true,
+    ["0083056197503510"] = true, ["00104007943345258"] = true,
+    ["00138058631419886"] = true, ["0082791323516669"] = true,
     ["00122209668269742"] = true,
 }
 
--- ==================== Helper Functions ====================
+-- ==================== Helper Functions (คงเดิม 100%) ====================
 local function urlDecode(str)
     if not str then return "" end
     str = string.gsub(str, "+", " ")
@@ -504,29 +482,10 @@ local function copyToClipboard(text)
 end
 
 local function playMusicFromId(musicId)
-    if not musicId or musicId == "" then return false end
-    local re = ReplicatedStorage:FindFirstChild("RE")
-    if re then
-        local success1, success2, success3 = false, false, false
-        local event1 = re:FindFirstChild("PlayerToolEvent")
-        if event1 then
-            local args1 = { "ToolMusicText", musicId, "", [4] = true }
-            success1 = pcall(function() event1:FireServer(unpack(args1)) end)
-        end
-        local event2 = re:FindFirstChild("1NoMoto1rVehicle1s")
-        if event2 then
-            local args2 = { "ToolMusicText", musicId, "", [4] = true }
-            success2 = pcall(function() event2:FireServer(unpack(args2)) end)
-            
-            local args3 = { "PickingScooterMusicText", musicId, "", [4] = true }
-            success3 = pcall(function() event2:FireServer(unpack(args3)) end)
-        end
-        return success1 or success2 or success3
-    end
-    return false
+    return ForcePlayMusicCombo(musicId)
 end
 
--- ==================== โครงสร้าง UI หลัก ====================
+-- ==================== โครงสร้าง UI หลัก (HORIZONTAL PANEL) ====================
 if PlayerGui:FindFirstChild("Honkuki_DeepSoundSpy") then PlayerGui.Honkuki_DeepSoundSpy:Destroy() end
 
 local ScreenGui = Instance.new("ScreenGui", PlayerGui)
@@ -542,9 +501,7 @@ local function setDrag(frame, handle)
             dragStart = input.Position
             startPos = frame.Position
             input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
+                if input.UserInputState == Enum.UserInputState.End then dragging = false end
             end)
         end
     end)
@@ -607,7 +564,7 @@ local BLayout = Instance.new("UIListLayout", ButtonsContainer)
 BLayout.Padding = UDim.new(0, 3)
 
 local GetIDBtn = Instance.new("TextButton", ButtonsContainer)
-GetIDBtn.Size = UDim2.new(1, 0, 0, 24)
+GetIDBtn.Size = UDim2.new(1, 0, 0, 22)
 GetIDBtn.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
 GetIDBtn.Text = "⚡ เจาะและดึงไอดีทั้งหมดทันที"
 GetIDBtn.Font = Enum.Font.GothamBold
@@ -616,7 +573,7 @@ GetIDBtn.TextColor3 = Color3.fromRGB(20, 20, 20)
 Instance.new("UICorner", GetIDBtn).CornerRadius = UDim.new(0, 4)
 
 local GetJunkBtn = Instance.new("TextButton", ButtonsContainer)
-GetJunkBtn.Size = UDim2.new(1, 0, 0, 24)
+GetJunkBtn.Size = UDim2.new(1, 0, 0, 22)
 GetJunkBtn.BackgroundColor3 = Color3.fromRGB(230, 90, 40)
 GetJunkBtn.Text = "🎵 เปิดเพลงตามขยะอย่างเดียว"
 GetJunkBtn.Font = Enum.Font.GothamBold
@@ -625,7 +582,7 @@ GetJunkBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 Instance.new("UICorner", GetJunkBtn).CornerRadius = UDim.new(0, 4)
 
 local ViewRawJunkBtn = Instance.new("TextButton", ButtonsContainer)
-ViewRawJunkBtn.Size = UDim2.new(1, 0, 0, 24)
+ViewRawJunkBtn.Size = UDim2.new(1, 0, 0, 22)
 ViewRawJunkBtn.BackgroundColor3 = Color3.fromRGB(140, 20, 230)
 ViewRawJunkBtn.Text = "👁️ ดูข้อความ RAW ดิบของผู้เล่น"
 ViewRawJunkBtn.Font = Enum.Font.GothamBold
@@ -634,7 +591,7 @@ ViewRawJunkBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 Instance.new("UICorner", ViewRawJunkBtn).CornerRadius = UDim.new(0, 4)
 
 local ViewInstantBtn = Instance.new("TextButton", ButtonsContainer)
-ViewInstantBtn.Size = UDim2.new(1, 0, 0, 24)
+ViewInstantBtn.Size = UDim2.new(1, 0, 0, 22)
 ViewInstantBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
 ViewInstantBtn.Text = "🔍 ดู ID เจาะทั้งหมด (Real-time)"
 ViewInstantBtn.Font = Enum.Font.GothamBold
@@ -643,13 +600,23 @@ ViewInstantBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 Instance.new("UICorner", ViewInstantBtn).CornerRadius = UDim.new(0, 4)
 
 local ViewScriptExecutorsBtn = Instance.new("TextButton", ButtonsContainer)
-ViewScriptExecutorsBtn.Size = UDim2.new(1, 0, 0, 24)
+ViewScriptExecutorsBtn.Size = UDim2.new(1, 0, 0, 22)
 ViewScriptExecutorsBtn.BackgroundColor3 = Color3.fromRGB(0, 140, 255)
 ViewScriptExecutorsBtn.Text = "👥 ดูผู้เล่นที่รันสคริปต์ (In-Server)"
 ViewScriptExecutorsBtn.Font = Enum.Font.GothamBold
 ViewScriptExecutorsBtn.TextSize = 10
 ViewScriptExecutorsBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 Instance.new("UICorner", ViewScriptExecutorsBtn).CornerRadius = UDim.new(0, 4)
+
+-- ปุ่มใหม่: สั่งเปิดเพลงบังคับคนอื่น (Force Play Music)
+local ForcePlayMusicBtn = Instance.new("TextButton", ButtonsContainer)
+ForcePlayMusicBtn.Size = UDim2.new(1, 0, 0, 22)
+ForcePlayMusicBtn.BackgroundColor3 = Color3.fromRGB(220, 20, 120)
+ForcePlayMusicBtn.Text = "📻 สั่งเปิดเพลงผู้เล่นรันสคริปต์"
+ForcePlayMusicBtn.Font = Enum.Font.GothamBold
+ForcePlayMusicBtn.TextSize = 10
+ForcePlayMusicBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+Instance.new("UICorner", ForcePlayMusicBtn).CornerRadius = UDim.new(0, 4)
 
 StatusLabel = Instance.new("TextLabel", MainFrame)
 StatusLabel.Size = UDim2.new(0.68, 0, 0, 24)
@@ -756,6 +723,109 @@ JunkBackBtn.TextSize = 11
 JunkBackBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 Instance.new("UICorner", JunkBackBtn).CornerRadius = UDim.new(0, 5)
 
+-- ==================== หน้าต่างสั่งเล่นเพลง (MUSIC CONTROL PANEL) ====================
+local MusicControlFrame = Instance.new("Frame", ScreenGui)
+MusicControlFrame.Size = UDim2.new(0, 320, 0, 180)
+MusicControlFrame.Position = UDim2.new(0.5, -160, 0.5, -90)
+MusicControlFrame.BackgroundColor3 = Color3.fromRGB(22, 18, 28)
+MusicControlFrame.Visible = false
+MusicControlFrame.ZIndex = 8
+Instance.new("UICorner", MusicControlFrame).CornerRadius = UDim.new(0, 8)
+local mcStroke = Instance.new("UIStroke", MusicControlFrame)
+mcStroke.Color = Color3.fromRGB(220, 20, 120)
+mcStroke.Thickness = 1.5
+
+local MusicTopBar = Instance.new("Frame", MusicControlFrame)
+MusicTopBar.Size = UDim2.new(1, 0, 0, 30)
+MusicTopBar.BackgroundColor3 = Color3.fromRGB(35, 22, 42)
+Instance.new("UICorner", MusicTopBar).CornerRadius = UDim.new(0, 8)
+setDrag(MusicControlFrame, MusicTopBar)
+
+local MusicTitle = Instance.new("TextLabel", MusicTopBar)
+MusicTitle.Size = UDim2.new(1, -10, 1, 0)
+MusicTitle.Position = UDim2.new(0, 10, 0, 0)
+MusicTitle.BackgroundTransparency = 1
+MusicTitle.Text = "📻 FORCE MUSIC CONTROL (สั่งเปิดเพลงผ่าน 2 รีโมท)"
+MusicTitle.TextColor3 = Color3.fromRGB(255, 100, 200)
+MusicTitle.Font = Enum.Font.GothamBold
+MusicTitle.TextSize = 10
+MusicTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+local UserInputBox = Instance.new("TextBox", MusicControlFrame)
+UserInputBox.Size = UDim2.new(0.9, 0, 0, 30)
+UserInputBox.Position = UDim2.new(0.05, 0, 0.23, 0)
+UserInputBox.BackgroundColor3 = Color3.fromRGB(12, 10, 18)
+UserInputBox.PlaceholderText = "ใส่ชื่อผู้เล่นที่รันสคริปต์ (เช่น Name / Display / all)"
+UserInputBox.Text = ""
+UserInputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+UserInputBox.Font = Enum.Font.Gotham
+UserInputBox.TextSize = 11
+Instance.new("UICorner", UserInputBox).CornerRadius = UDim.new(0, 4)
+
+local MusicIdInputBox = Instance.new("TextBox", MusicControlFrame)
+MusicIdInputBox.Size = UDim2.new(0.9, 0, 0, 30)
+MusicIdInputBox.Position = UDim2.new(0.05, 0, 0.44, 0)
+MusicIdInputBox.BackgroundColor3 = Color3.fromRGB(12, 10, 18)
+MusicIdInputBox.PlaceholderText = "ใส่ Asset ID เพลง (เช่น 1837879084)"
+MusicIdInputBox.Text = ""
+MusicIdInputBox.TextColor3 = Color3.fromRGB(255, 215, 0)
+MusicIdInputBox.Font = Enum.Font.GothamBold
+MusicIdInputBox.TextSize = 11
+Instance.new("UICorner", MusicIdInputBox).CornerRadius = UDim.new(0, 4)
+
+local SendMusicBtn = Instance.new("TextButton", MusicControlFrame)
+SendMusicBtn.Size = UDim2.new(0.43, 0, 0, 28)
+SendMusicBtn.Position = UDim2.new(0.05, 0, 0.72, 0)
+SendMusicBtn.BackgroundColor3 = Color3.fromRGB(220, 20, 120)
+SendMusicBtn.Text = "▶ สั่งเปิดเพลงทันที"
+SendMusicBtn.Font = Enum.Font.GothamBold
+SendMusicBtn.TextSize = 10
+SendMusicBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+Instance.new("UICorner", SendMusicBtn).CornerRadius = UDim.new(0, 4)
+
+local CloseMusicBtn = Instance.new("TextButton", MusicControlFrame)
+CloseMusicBtn.Size = UDim2.new(0.43, 0, 0, 28)
+CloseMusicBtn.Position = UDim2.new(0.52, 0, 0.72, 0)
+CloseMusicBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+CloseMusicBtn.Text = "❌ ปิดหน้าต่าง"
+CloseMusicBtn.Font = Enum.Font.GothamBold
+CloseMusicBtn.TextSize = 10
+CloseMusicBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+Instance.new("UICorner", CloseMusicBtn).CornerRadius = UDim.new(0, 4)
+
+ForcePlayMusicBtn.MouseButton1Click:Connect(function()
+    MusicControlFrame.Visible = true
+    if CurrentSelectedPlayer then UserInputBox.Text = CurrentSelectedPlayer.Name end
+end)
+
+CloseMusicBtn.MouseButton1Click:Connect(function() MusicControlFrame.Visible = false end)
+
+local function sendAdminChatMessage(msg)
+    local TextChatService = game:GetService("TextChatService")
+    if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+        local channel = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
+        if channel then channel:SendAsync(msg) end
+    else
+        ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents").SayMessageRequest:FireServer(msg, "All")
+    end
+end
+
+SendMusicBtn.MouseButton1Click:Connect(function()
+    local targetUser = UserInputBox.Text
+    local songId = MusicIdInputBox.Text
+    if targetUser ~= "" and songId ~= "" then
+        if IsAdmin(LocalPlayer) then
+            sendAdminChatMessage(";playmusic " .. targetUser .. " " .. songId)
+            StatusLabel.Text = "👑 ส่งคำสั่งเล่นเพลง: " .. songId .. " ไปยัง " .. targetUser
+        else
+            ForcePlayMusicCombo(songId)
+            StatusLabel.Text = "🎵 สั่งเล่นเพลงตนเอง: " .. songId
+        end
+    else
+        StatusLabel.Text = "⚠️ กรุณากรอกทั้งชื่อผู้เล่นและ ID เพลง!"
+    end
+end)
+
 local CurrentViewMode = 1
 local PlayerButtons = {}
 
@@ -765,7 +835,7 @@ local function updateJunkViewerLive()
     local outputText = ""
 
     if CurrentViewMode == 3 then
-        JunkTitle.Text = "SCRIPT EXECUTORS (ผู้เล่นที่รันสคริปต์ในเซิร์ฟ)"
+        JunkTitle.Text = "SCRIPT EXECUTORS (เฉพาะคนที่รันจริงในเซิร์ฟ)"
         jStroke.Color = Color3.fromRGB(0, 140, 255)
         JunkCopyBtn.BackgroundColor3 = Color3.fromRGB(0, 140, 255)
 
@@ -783,7 +853,7 @@ local function updateJunkViewerLive()
         end
 
         if count == 0 then
-            outputText = "❌ ไม่พบผู้เล่นที่รันสคริปต์นี้ในห้อง"
+            outputText = "❌ ไม่พบผู้เล่นที่กำลังรันสคริปต์นี้ในห้อง"
         else
             outputText = "--- ผู้เล่นที่กำลังรันสคริปต์นี้อยู่ทั้งหมด (" .. count .. " คน) ---\n\n" .. outputText
         end
@@ -1033,12 +1103,13 @@ ToggleBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
     if not MainFrame.Visible then 
         JunkFrame.Visible = false 
+        MusicControlFrame.Visible = false
     else
         refreshPlayers()
     end
 end)
 
--- ==================== เมนูแอดมินแยกเฉพาะ (ADMIN PANEL SEPARATE CHOICE) ====================
+-- ==================== เมนูแอดมินแยกเฉพาะ (ADMIN DISASTER PANEL) ====================
 if IsAdmin(LocalPlayer) then
     local AdminFrame = Instance.new("Frame", ScreenGui)
     AdminFrame.Size = UDim2.new(0, 320, 0, 260)
@@ -1092,16 +1163,6 @@ if IsAdmin(LocalPlayer) then
         {Name = "💥 ฆ่าผู้เล่นทุกคน (;kill all)", Cmd = "kill_all"}
     }
 
-    local function sendAdminChatMessage(msg)
-        local TextChatService = game:GetService("TextChatService")
-        if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-            local channel = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
-            if channel then channel:SendAsync(msg) end
-        else
-            ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents").SayMessageRequest:FireServer(msg, "All")
-        end
-    end
-
     for _, choice in ipairs(CommandsChoice) do
         local btn = Instance.new("TextButton", CmdScroll)
         btn.Size = UDim2.new(1, -6, 0, 26)
@@ -1130,17 +1191,18 @@ if IsAdmin(LocalPlayer) then
     CmdScroll.CanvasSize = UDim2.new(0, 0, 0, CmdLayout.AbsoluteContentSize.Y)
 end
 
--- Loop อัปเดตสถานะและข้อมูล Real-time
+-- Loop อัปเดตสถานะ Tag และข้อมูล Real-time (เช็คคนรันสคริปต์จริงเท่านั้น)
 task.spawn(function()
     while true do
         task.wait(2)
-        tagLocalPlayer()
+        markSelfAsRunner()
+        for _, p in ipairs(Players:GetPlayers()) do
+            pcall(function() setupPlayerTag(p) end)
+        end
         if MainFrame.Visible then
             pcall(function()
                 refreshPlayers()
-                if JunkFrame.Visible then
-                    updateJunkViewerLive()
-                end
+                if JunkFrame.Visible then updateJunkViewerLive() end
             end)
         end
     end
