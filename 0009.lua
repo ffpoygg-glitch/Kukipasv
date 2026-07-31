@@ -1,3 +1,14 @@
+local AllowedIDs = {
+    [9802544328] = true,
+    [6030349781] = true,
+    [1697390697] = true,
+}
+
+if not AllowedIDs[game:GetService("Players").LocalPlayer.UserId] then
+    game:GetService("Players").LocalPlayer:Kick("ใครให้มึงใช้ไอ้พวกควายทั้งหลาย")
+    return
+end
+
 -- =====================================================================
 -- HONKUKI DEEP VALIDATOR SCANNER + REAL-TIME ADMIN & MUSIC CONTROL SYSTEM
 -- [โครงสร้างเดิมอยู่ครบ 100% + ปรับระบบสั่งเพลงไม่ผ่านแชต + ถอดเมนูลอยแอดมินออก]
