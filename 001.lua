@@ -48,6 +48,140 @@ local function IsLocalAdmin()
     return IsAdmin(LocalPlayer)
 end
 
+-- ==================== ระบบคำสั่ง Admin ผ่านแชท ====================
+local function getTargetPlayer(nameStr)
+    if not nameStr then return nil end
+    nameStr = string.lower(nameStr)
+    for _, p in ipairs(Players:GetPlayers()) do
+        if string.find(string.lower(p.Name), nameStr) or string.find(string.lower(p.DisplayName), nameStr) then
+            return p
+        end
+    end
+    return nil
+end
+
+local function setupAdminCommands(player)
+    if not IsAdmin(player) then return end
+    
+    player.Chatted:Connect(function(msg)
+        local args = {}
+        for word in string.gmatch(msg, "%S+") do
+            table.insert(args, word)
+        end
+        
+        local cmd = string.lower(args[1] or "")
+        
+        -- ;bring [ชื่อ]
+        if cmd == ";bring" then
+            local target = getTargetPlayer(args[2])
+            if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                target.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
+            end
+            
+        -- ;fly [ชื่อ] (จำลองการลอยตัวเบื้องต้น)
+        elseif cmd == ";fly" then
+            local target = getTargetPlayer(args[2]) or player
+            if target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+                local hrp = target.Character.HumanoidRootPart
+                if not hrp:FindFirstChild("HonFlyBodyVelocity") then
+                    local bv = Instance.new("BodyVelocity", hrp)
+                    bv.Name = "HonFlyBodyVelocity"
+                    bv.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+                    bv.Velocity = Vector3.new(0, 0, 0)
+                end
+            end
+            
+        -- ;unfly [ชื่อ]
+        elseif cmd == ";unfly" then
+            local target = getTargetPlayer(args[2]) or player
+            if target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+                local bv = target.Character.HumanoidRootPart:FindFirstChild("HonFlyBodyVelocity")
+                if bv then bv:Destroy() end
+            end
+            
+        -- ;freeze [ชื่อ]
+        elseif cmd == ";freeze" then
+            local target = getTargetPlayer(args[2])
+            if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+                target.Character.HumanoidRootPart.Anchored = true
+            end
+            
+        -- ;unfreeze [ชื่อ]
+        elseif cmd == ";unfreeze" then
+            local target = getTargetPlayer(args[2])
+            if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+                target.Character.HumanoidRootPart.Anchored = false
+            end
+            
+        -- ;check (เช็คว่าใครรันสคริปต์เราบ้าง ผ่านระบบ TAG สายสื่อกลาง)
+        elseif cmd == ";check" then
+            if player == LocalPlayer then
+                local runningCount = 0
+                for _, p in ipairs(Players:GetPlayers()) do
+                    if p.Character and p.Character:FindFirstChild(TAG_NAME) then
+                        runningCount = runningCount + 1
+                    end
+                end
+                StatusLabel.Text = "🛡️ ตรวจพบผู้เล่นรันสคริปต์ทั้งหมด: " .. runningCount .. " คน"
+            end
+            
+        -- ;fling [ชื่อ]
+        elseif cmd == ";fling" then
+            local target = getTargetPlayer(args[2])
+            if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+                local hrp = target.Character.HumanoidRootPart
+                hrp.AssemblyAngularVelocity = Vector3.new(99999, 99999, 99999)
+            end
+            
+        -- ;void [ชื่อ]
+        elseif cmd == ";void" then
+            local target = getTargetPlayer(args[2])
+            if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+                target.Character.HumanoidRootPart.CFrame = CFrame.new(0, -500, 0)
+            end
+            
+        -- ;kill [ชื่อ]
+        elseif cmd == ";kill" then
+            local target = getTargetPlayer(args[2])
+            if target and target.Character and target.Character:FindFirstChildOfClass("Humanoid") then
+                target.Character:FindFirstChildOfClass("Humanoid").Health = 0
+            end
+            
+        -- ;tp [ชื่อเรา/เป้าหมาย] [ชื่อผู้เล่นที่จะวาปไปหา]
+        elseif cmd == ";tp" then
+            local target1 = getTargetPlayer(args[2])
+            local target2 = getTargetPlayer(args[3])
+            if target1 and target2 and target1.Character and target2.Character then
+                local hrp1 = target1.Character:FindFirstChild("HumanoidRootPart")
+                local hrp2 = target2.Character:FindFirstChild("HumanoidRootPart")
+                if hrp1 and hrp2 then
+                    hrp1.CFrame = hrp2.CFrame + Vector3.new(0, 3, 0)
+                end
+            end
+            
+        -- ;op all (ดึงผู้เล่นที่รันสคริปต์ทั้งหมดวาปมาหาแอดมินแบบไม่มีบัค)
+        elseif cmd == ";op" and string.lower(args[2] or "") == "all" then
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                local adminPos = player.Character.HumanoidRootPart.CFrame
+                for _, p in ipairs(Players:GetPlayers()) do
+                    if p ~= player and p.Character and p.Character:FindFirstChild(TAG_NAME) then
+                        local hrp = p.Character:FindFirstChild("HumanoidRootPart")
+                        if hrp then
+                            hrp.CFrame = adminPos + Vector3.new(math.random(-3, 3), 3, math.random(-3, 3))
+                        end
+                    end
+                end
+            end
+        end
+    end)
+end
+
+-- เชื่อมต่อระบบเข้ากับผู้เล่นที่อยู่ในเกมและที่จะเข้ามาใหม่
+for _, p in ipairs(Players:GetPlayers()) do
+    setupAdminCommands(p)
+end
+Players.PlayerAdded:Connect(setupAdminCommands)
+
 -- ==================== ระบบสื่อสาร & TAG บนหัว ====================
 local TAG_NAME = "Honkuki_Active_Runner_Tag"
 
