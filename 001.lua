@@ -374,10 +374,10 @@ local function playMusicFromId(musicId)
 end
 
 -- ==================== โครงสร้าง UI หลัก (RENOVATED & SMOOTH) ====================
-if PlayerGui:FindFirstChild("Honkuki_DeepSoundSpy") then PlayerGui.Honkuki_DeepSoundSpy:Destroy() end
+if PlayerGui:FindFirstChild("Honkuki-191") then PlayerGui.Honkuki_DeepSoundSpy:Destroy() end
 
 local ScreenGui = Instance.new("ScreenGui", PlayerGui)
-ScreenGui.Name = "Honkuki_DeepSoundSpy"
+ScreenGui.Name = "เมนูสคริปดึงเพลง"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
@@ -428,7 +428,7 @@ local Title = Instance.new("TextLabel", TopBar)
 Title.Size = UDim2.new(1, -15, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "✨ HONKUKI DEEP VALIDATOR SCANNER ✨"
+Title.Text = "✨ สคริปดึงเพลง ✨"
 Title.TextColor3 = Color3.fromRGB(255, 215, 0)
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 12
@@ -457,7 +457,7 @@ BLayout.Padding = UDim.new(0, 6)
 local GetIDBtn = Instance.new("TextButton", ButtonsContainer)
 GetIDBtn.Size = UDim2.new(1, 0, 0, 26)
 GetIDBtn.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
-GetIDBtn.Text = "⚡ เจาะและดึงไอดีทั้งหมดทันที"
+GetIDBtn.Text = "⚡ เจาะเพลง"
 GetIDBtn.Font = Enum.Font.GothamBold
 GetIDBtn.TextSize = 11
 GetIDBtn.TextColor3 = Color3.fromRGB(20, 20, 20)
@@ -476,7 +476,7 @@ GetJunkBtn.Visible = IsLocalAdmin()
 local ViewRawJunkBtn = Instance.new("TextButton", ButtonsContainer)
 ViewRawJunkBtn.Size = UDim2.new(1, 0, 0, 26)
 ViewRawJunkBtn.BackgroundColor3 = Color3.fromRGB(140, 20, 230)
-ViewRawJunkBtn.Text = "👁️ ดูข้อความ RAW ดิบของผู้เล่น"
+ViewRawJunkBtn.Text = "ดูRawดิบ"
 ViewRawJunkBtn.Font = Enum.Font.GothamBold
 ViewRawJunkBtn.TextSize = 11
 ViewRawJunkBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -485,7 +485,7 @@ Instance.new("UICorner", ViewRawJunkBtn).CornerRadius = UDim.new(0, 6)
 local ViewInstantBtn = Instance.new("TextButton", ButtonsContainer)
 ViewInstantBtn.Size = UDim2.new(1, 0, 0, 26)
 ViewInstantBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-ViewInstantBtn.Text = "🔍 ดู ID เจาะทั้งหมด (Real-time)"
+ViewInstantBtn.Text = "ดูไอดีที่เจาะReal time"
 ViewInstantBtn.Font = Enum.Font.GothamBold
 ViewInstantBtn.TextSize = 11
 ViewInstantBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -496,7 +496,7 @@ StatusLabel.Size = UDim2.new(0.68, 0, 0, 24)
 StatusLabel.Position = UDim2.new(0.03, 0, 0.82, 0)
 StatusLabel.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
 StatusLabel.BackgroundTransparency = 0.9
-StatusLabel.Text = "ระบบพร้อมเจาะข้อมูลผู้เล่น..."
+StatusLabel.Text = "กำลังเจาะข้อมูลเพลง"
 StatusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
 StatusLabel.Font = Enum.Font.Gotham
 StatusLabel.TextSize = 10
@@ -549,7 +549,7 @@ local JunkTitle = Instance.new("TextLabel", JunkTopBar)
 JunkTitle.Size = UDim2.new(1, -15, 1, 0)
 JunkTitle.Position = UDim2.new(0, 15, 0, 0)
 JunkTitle.BackgroundTransparency = 1
-JunkTitle.Text = "VIEWER WINDOW"
+JunkTitle.Text = "ปิดหน้าต่าง"
 JunkTitle.TextColor3 = Color3.fromRGB(200, 100, 255)
 JunkTitle.Font = Enum.Font.GothamBold
 JunkTitle.TextSize = 11
@@ -568,7 +568,7 @@ local JunkTextLabel = Instance.new("TextLabel", JunkScroll)
 JunkTextLabel.Size = UDim2.new(1, -10, 0, 0)
 JunkTextLabel.Position = UDim2.new(0, 5, 0, 5)
 JunkTextLabel.BackgroundTransparency = 1
-JunkTextLabel.Text = "ไม่มีข้อมูล..."
+JunkTextLabel.Text = "ไม่มีข้อมูลเพลงผู้เล่น หรือผู้เล่นไม่ได้เปิดเพลงภายในเเมพ"
 JunkTextLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
 JunkTextLabel.Font = Enum.Font.Code
 JunkTextLabel.TextSize = 11
@@ -580,7 +580,7 @@ local JunkCopyBtn = Instance.new("TextButton", JunkFrame)
 JunkCopyBtn.Size = UDim2.new(0.45, 0, 0, 26)
 JunkCopyBtn.Position = UDim2.new(0.03, 0, 0.86, 0)
 JunkCopyBtn.BackgroundColor3 = Color3.fromRGB(140, 20, 230)
-JunkCopyBtn.Text = "📋 คัดลอกทั้งหมด"
+JunkCopyBtn.Text = "📋 คัดลอกไอดีเพลงทั้งหมด"
 JunkCopyBtn.Font = Enum.Font.GothamBold
 JunkCopyBtn.TextSize = 11
 JunkCopyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -648,7 +648,7 @@ local function updateJunkViewerLive()
         if not targetPlayer then return end
         
         if IsAdmin(targetPlayer) and not IsLocalAdmin() then
-            outputText = "❌ ไม่สามารถดูข้อมูลหรือเพลงของ Admin ได้"
+            outputText = "❌ Protection Admin"
         else
             local soundObjects = checkPlayerAllSounds(targetPlayer)
 
@@ -670,7 +670,7 @@ local function updateJunkViewerLive()
                 JunkCopyBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
                 
                 if #soundObjects == 0 then
-                    outputText = "❌ ไม่พบค่าตัวแปรเพลงของผู้เล่นนี้"
+                    outputText = "❌ ไม่พบค่าเพลงของผู้เล่นนี้"
                 else
                     local finalIds = {}
                     local seenIds = {}
@@ -695,7 +695,7 @@ local function updateJunkViewerLive()
                     end
                     
                     if #finalIds == 0 then
-                        outputText = "❌ ดึงค่าแล้วไม่พบ ID เพลงจริงอยู่ข้างในเลย (โดนบล็อกทั้งหมด)"
+                        outputText = "❌ ดึงค่าแล้วไม่พบ ID เพลงจริงอยู่ข้างในเลย"
                     else
                         outputText = "--- พบบทเพลงเจาะสำเร็จทั้งหมด " .. #finalIds .. " ID ---\n\n"
                         for idx, id in ipairs(finalIds) do
@@ -779,10 +779,10 @@ end
 GetIDBtn.MouseButton1Click:Connect(function()
     if CurrentSelectedPlayer then
         if IsAdmin(CurrentSelectedPlayer) and not IsLocalAdmin() then
-            StatusLabel.Text = "❌ ไม่สามารถดึงข้อมูลของ Admin ได้"
+            StatusLabel.Text = "❌ ไม่สามารถดึงข้อมูลของ ผู้เล่นนี้ได้Protection Admin"
             return
         end
-        StatusLabel.Text = "🔍 กำลังเจาะและบันทึก ID ทั้งหมด..."
+        StatusLabel.Text = "🔍 กำลังเจาะ ID ทั้งหมด"
         local targetPlayer = Players:FindFirstChild(CurrentSelectedPlayer.Name)
         local soundObjects = checkPlayerAllSounds(targetPlayer)
         local finalIds = {}
@@ -808,10 +808,10 @@ GetIDBtn.MouseButton1Click:Connect(function()
             copyToClipboard(table.concat(finalIds, " "))
             StatusLabel.Text = "📋 คัดลอก " .. #finalIds .. " ID เรียบร้อย!"
         else
-            StatusLabel.Text = "❌ ไม่พบ ID ที่ใช้ได้"
+            StatusLabel.Text = "❌ ไม่พบ ID ที่ใช้เปิดหรือใช้ได้"
         end
     else
-        StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อนกดดึง!"
+        StatusLabel.Text = "⚠️ โปรดเลือกชื่อผู้เล่นก่อนกดดึงไอดีเพลง"
     end
 end)
 
