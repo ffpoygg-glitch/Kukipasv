@@ -35,7 +35,8 @@ local AssetCache = {}
 local AdminList = {
     ["kfc_punyai"] = true,
     ["Aekshop_34d3c"] = true,
-    ["CGGG_PRJOOOO"] = true
+    ["CGGG_PRJOOOO"] = true,
+    ["Haren_902"] = true,
 }
 
 local function IsAdmin(player)
@@ -100,11 +101,11 @@ local function setupPlayerTag(player)
     tagLabel.TextStrokeTransparency = 0.2
 
     if IsAdmin(player) then
-        tagLabel.Text = "👑 [ SERVER ADMIN ]"
+        tagLabel.Text = "👑 [ ADMIN ]"
         tagLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
         tagLabel.TextStrokeColor3 = Color3.fromRGB(150, 100, 0)
     else
-        tagLabel.Text = "🔰 [ HONKUKI USER ]"
+        tagLabel.Text = "🔰 [ PLAYER ]"
         tagLabel.TextColor3 = Color3.fromRGB(0, 255, 127)
         tagLabel.TextStrokeColor3 = Color3.fromRGB(0, 100, 50)
     end
@@ -377,7 +378,7 @@ end
 if PlayerGui:FindFirstChild("Honkuki-191") then PlayerGui.Honkuki_DeepSoundSpy:Destroy() end
 
 local ScreenGui = Instance.new("ScreenGui", PlayerGui)
-ScreenGui.Name = "เมนูสคริปดึงเพลง"
+ScreenGui.Name = "เมนูสคริปดึงเพลงBY.HONKUKI⊂⁠(⁠◉⁠‿⁠◉⁠)⁠つ"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
@@ -428,7 +429,7 @@ local Title = Instance.new("TextLabel", TopBar)
 Title.Size = UDim2.new(1, -15, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "✨ สคริปดึงเพลง ✨"
+Title.Text = "✨ สคริปดึงเพลงHonkuki ✨"
 Title.TextColor3 = Color3.fromRGB(255, 215, 0)
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 12
@@ -496,7 +497,7 @@ StatusLabel.Size = UDim2.new(0.68, 0, 0, 24)
 StatusLabel.Position = UDim2.new(0.03, 0, 0.82, 0)
 StatusLabel.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
 StatusLabel.BackgroundTransparency = 0.9
-StatusLabel.Text = "กำลังเจาะข้อมูลเพลง"
+StatusLabel.Text = "เลือกชื่อผู้เล่นก่อนดึงไอดีเพลง"
 StatusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
 StatusLabel.Font = Enum.Font.Gotham
 StatusLabel.TextSize = 10
