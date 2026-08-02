@@ -519,7 +519,7 @@ local ToggleBtn = Instance.new("ImageButton", ScreenGui)
 ToggleBtn.Size = UDim2.new(0, 52, 0, 52)
 ToggleBtn.Position = UDim2.new(0.02, 0, 0.4, 0)
 ToggleBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
-ToggleBtn.Image = "rbxassetid://134631110913555" -- เปลี่ยนตรงนี้ตามสั่ง 100%
+ToggleBtn.Image = "rbxassetid://104747656190057" -- เปลี่ยนตรงนี้ตามสั่ง 100%
 ToggleBtn.ZIndex = 10
 Instance.new("UICorner", ToggleBtn).CornerRadius = UDim.new(0, 16)
 local tStroke = Instance.new("UIStroke", ToggleBtn)
@@ -895,7 +895,7 @@ Players.PlayerAdded:Connect(refreshPlayers)
 Players.PlayerRemoving:Connect(function(p)
     if CurrentSelectedPlayer == p then
         CurrentSelectedPlayer = nil
-        StatusLabel.Text = "โปรดเลือกผู้เล่น..."
+        StatusLabel.Text = "โปรดเลือกชื่อผู้เล่นก่อนดึงจั๊ฟฟ"
     end
     refreshPlayers()
 end)
