@@ -48,7 +48,7 @@ local function IsLocalAdmin()
     return IsAdmin(LocalPlayer)
 end
 
--- ==================== ⬇️ วางโค้ดระบบคำสั่งแอดมินชุดใหม่ทั้งหมดตรงนี้ ⬇️ ====================
+-- ==================== ระบบคำสั่ง Admin ผ่านแชท ====================
 local TextChatService = game:GetService("TextChatService")
 
 local function getTargetPlayer(nameStr)
